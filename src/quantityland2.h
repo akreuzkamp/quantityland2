@@ -235,6 +235,20 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
     template<typename T>
     using invert_t = decltype(invertDimension(std::declval<T>()));
 
+    template<typename Engine, typename DimensionPackHead1, typename DimensionPackHead2, typename ...DimensionPackTail>
+    static constexpr bool verifyDimensionOrder(const Quantity<Engine, DimensionPackHead1, DimensionPackHead2, DimensionPackTail...> *)
+    {
+        return (DimensionPackHead1::Dimension::baseDimensionId < DimensionPackHead2::Dimension::baseDimensionId)
+                && verifyDimensionOrder(static_cast<Quantity<Engine, DimensionPackHead2, DimensionPackTail...>*>(nullptr));
+    }
+    template<typename Engine, typename DimensionPackHead1>
+    static constexpr bool verifyDimensionOrder(const Quantity<Engine, DimensionPackHead1> *)
+    {
+        return true;
+    }
+    template<typename Quantity>
+    static constexpr bool verifyDimensionOrder_v = verifyDimensionOrder(static_cast<Quantity*>(nullptr));
+
     /**
     * Given
     * `auto v = Quantity&lt;Engine, DimensionComponent&lt;BaseDimensionPack, exponentPack>...&gt;&gt;::fromNumericalValue(1.0);` and
@@ -421,6 +435,10 @@ template<typename Engine1, typename Engine2,typename ...DimensionPack1, typename
 constexpr auto operator*(const Quantity<Engine1, DimensionPack1...> &lhs, const Quantity<Engine2, DimensionPack2...> &rhs)
     -> detail::mergeMul_t<Quantity<Engine1, DimensionPack1...>, Quantity<Engine2, DimensionPack2...>>
 {
+    static_assert(verifyDimensionOrder_v<Quantity<Engine1, DimensionPack1...>>,
+                  "The left hand operand doesn't obey the required ordre of base dimensions, e.g. Length MUST be listed before Mass.");
+    static_assert(verifyDimensionOrder_v<Quantity<Engine2, DimensionPack2...>>,
+                  "The right hand operand doesn't obey the required ordre of base dimensions, e.g. Length MUST be listed before Mass.");
     using Ret_t = detail::mergeMul_t<Quantity<Engine1, DimensionPack1...>, Quantity<Engine2, DimensionPack2...>>;
     return detail::fromNumericalValue<Ret_t>(lhs.numericalValue() * detail::convert<Engine1>(rhs));
 }
@@ -429,6 +447,10 @@ template<typename Engine1, typename Engine2,typename ...DimensionPack1, typename
 constexpr auto operator/(const Quantity<Engine1, DimensionPack1...> &lhs, const Quantity<Engine2, DimensionPack2...> &rhs)
     -> detail::mergeDiv_t<Quantity<Engine1, DimensionPack1...>, Quantity<Engine2, DimensionPack2...>>
 {
+    static_assert(verifyDimensionOrder_v<Quantity<Engine1, DimensionPack1...>>,
+                  "The left hand operand doesn't obey the required ordre of base dimensions, e.g. Length MUST be listed before Mass.");
+    static_assert(verifyDimensionOrder_v<Quantity<Engine2, DimensionPack2...>>,
+                  "The right hand operand doesn't obey the required ordre of base dimensions, e.g. Length MUST be listed before Mass.");
     using Ret_t = detail::mergeDiv_t<Quantity<Engine1, DimensionPack1...>, Quantity<Engine2, DimensionPack2...>>;
     return detail::fromNumericalValue<Ret_t>(lhs.numericalValue() / detail::convert<Engine1>(rhs));
 }
@@ -437,6 +459,8 @@ template<typename Scalar, typename Engine, typename ...DimensionPack>
 constexpr auto operator*(const Quantity<Engine, DimensionPack...> &lhs, Scalar rhs)
     -> std::enable_if_t<std::is_convertible_v<decltype(lhs.numericalValue(), rhs), double>, Quantity<Engine, DimensionPack...>>
 {
+    static_assert(verifyDimensionOrder_v<Quantity<Engine, DimensionPack...>>,
+                  "The left hand operand doesn't obey the required ordre of base dimensions, e.g. Length MUST be listed before Mass.");
     using Ret_t = Quantity<Engine, DimensionPack...>;
     return detail::fromNumericalValue<Ret_t>(lhs.numericalValue() * rhs);
 }
@@ -445,6 +469,8 @@ template<typename Scalar, typename Engine, typename ...DimensionPack>
 constexpr auto operator*(Scalar lhs, const Quantity<Engine, DimensionPack...> &rhs)
     -> std::enable_if_t<std::is_convertible_v<decltype(lhs * rhs.numericalValue()), double>, Quantity<Engine, DimensionPack...>>
 {
+    static_assert(verifyDimensionOrder_v<Quantity<Engine, DimensionPack...>>,
+                  "The right hand operand doesn't obey the required ordre of base dimensions, e.g. Length MUST be listed before Mass.");
     using Ret_t = Quantity<Engine, DimensionPack...>;
     return detail::fromNumericalValue<Ret_t>(lhs * rhs.numericalValue());
 }
@@ -453,6 +479,8 @@ template<typename Scalar, typename Engine, typename ...DimensionPack>
 constexpr auto operator/(const Quantity<Engine, DimensionPack...> &lhs, Scalar rhs)
     -> std::enable_if_t<std::is_convertible_v<decltype(lhs.numericalValue() / rhs), double>, Quantity<Engine, DimensionPack...>>
 {
+    static_assert(verifyDimensionOrder_v<Quantity<Engine, DimensionPack...>>,
+                  "The left hand operand doesn't obey the required ordre of base dimensions, e.g. Length MUST be listed before Mass.");
     using Ret_t = Quantity<Engine, DimensionPack...>;
     return detail::fromNumericalValue<Ret_t>(lhs.numericalValue() / rhs);
 }
@@ -461,6 +489,8 @@ template<typename Scalar, typename Engine, typename ...DimensionPack>
 constexpr auto operator/(Scalar lhs, const Quantity<Engine, DimensionPack...> &rhs)
     -> std::enable_if_t<std::is_convertible_v<decltype(lhs / rhs.numericalValue()), double>, detail::invert_t<Quantity<Engine, DimensionPack...>>>
 {
+    static_assert(verifyDimensionOrder_v<Quantity<Engine, DimensionPack...>>,
+                  "The right hand operand doesn't obey the required ordre of base dimensions, e.g. Length MUST be listed before Mass.");
     using Ret_t = detail::invert_t<Quantity<Engine, DimensionPack...>>;
     return detail::fromNumericalValue<Ret_t>(lhs / rhs.numericalValue());
 }
@@ -469,6 +499,8 @@ constexpr auto operator/(Scalar lhs, const Quantity<Engine, DimensionPack...> &r
 template<int exp, typename Engine, typename ...BaseDimensionPack, int ...exponentPack>
 auto root(const Quantity<Engine, DimensionComponent<BaseDimensionPack, exponentPack>...> &base)
 {
+    static_assert(verifyDimensionOrder_v<Quantity<Engine, DimensionComponent<BaseDimensionPack, exponentPack>...>>,
+                  "The operand doesn't obey the required ordre of base dimensions, e.g. Length MUST be listed before Mass.");
     static_assert(((exponentPack % exp == 0) && ...), "Extracting the root is not possible: Quantityland2 doesn't support rational exponents yet.");
     using Ret_t = Quantity<Engine, DimensionComponent<BaseDimensionPack, exponentPack / exp>...>;
     if constexpr (exp == 2) {
