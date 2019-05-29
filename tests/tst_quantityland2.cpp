@@ -86,6 +86,11 @@ static_assert(std::is_same_v<detail::mergeMul_t<
         Quantity<void, DimensionComponent<Length, 4>>
 >);
 static_assert(std::is_same_v<detail::mergeMul_t<
+Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 1>, DimensionComponent<Time, 1>>,
+Quantity<void, DimensionComponent<Length, 1>> >,
+Quantity<void, DimensionComponent<Length, 2>, DimensionComponent<Mass, 1>, DimensionComponent<Time, 1>>
+>);
+static_assert(std::is_same_v<detail::mergeMul_t<
         Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
         Quantity<void, DimensionComponent<Length, -1>, DimensionComponent<Mass, -2>> >,
         double
@@ -141,6 +146,11 @@ static_assert(std::is_same_v<detail::mergeDiv_t<
         Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
         Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Mass, 2>> >,
         Quantity<void, DimensionComponent<Length, -2>>
+>);
+static_assert(std::is_same_v<detail::mergeDiv_t<
+Quantity<void, DimensionComponent<Length, -1>, DimensionComponent<Mass, 1>, DimensionComponent<Time, 1>>,
+Quantity<void, DimensionComponent<Length, 1>> >,
+Quantity<void, DimensionComponent<Length, -2>, DimensionComponent<Mass, 1>, DimensionComponent<Time, 1>>
 >);
 static_assert(std::is_same_v<detail::mergeDiv_t<
         Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,

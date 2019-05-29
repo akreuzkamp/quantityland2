@@ -176,19 +176,25 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
     //     using type = decltype(mergeStep<Plus>(std::declval<T1>(), std::declval<T2>()));
     // };
 
+    // Merge empty (i.e. dimensionless) quantities
     template<Op op, typename Engine1, typename Engine2>
     auto mergeStep(const Quantity<Engine1> &, const Quantity<Engine2> &)
         -> double;
 
-    template<Op op, typename Engine1, typename Engine2, typename DimensionPack1Head>
-    auto mergeStep(const Quantity<Engine1, DimensionPack1Head> &, const Quantity<Engine2> &)
-        -> Quantity<Engine1, DimensionComponent<typename DimensionPack1Head::Dimension, applyOp(op, DimensionPack1Head::exponent, 0)>>;
+    // Merge with empty right-hand-side
+    template<Op op, typename Engine1, typename Engine2, typename DimensionPack1Head, typename ...DimensionPack1Tail>
+    auto mergeStep(const Quantity<Engine1, DimensionPack1Head, DimensionPack1Tail...> &, const Quantity<Engine2> &)
+        -> Quantity<Engine1, DimensionComponent<typename DimensionPack1Head::Dimension, applyOp(op, DimensionPack1Head::exponent, 0)>,
+                             DimensionComponent<typename DimensionPack1Tail::Dimension, applyOp(op, DimensionPack1Tail::exponent, 0)>...>;
 
 
-    template<Op op, typename Engine1, typename Engine2, typename DimensionPack2Head>
-    auto mergeStep(const Quantity<Engine1> &, const Quantity<Engine2, DimensionPack2Head> &)
-        -> Quantity<Engine1, DimensionComponent<typename DimensionPack2Head::Dimension, applyOp(op, 0, DimensionPack2Head::exponent)>>;
+    // Merge with empty left-hand-side
+    template<Op op, typename Engine1, typename Engine2, typename DimensionPack2Head, typename ...DimensionPack2Tail>
+    auto mergeStep(const Quantity<Engine1> &, const Quantity<Engine2, DimensionPack2Head, DimensionPack2Tail...> &)
+        -> Quantity<Engine1, DimensionComponent<typename DimensionPack2Head::Dimension, applyOp(op, 0, DimensionPack2Head::exponent)>,
+                             DimensionComponent<typename DimensionPack2Tail::Dimension, applyOp(op, 0, DimensionPack2Tail::exponent)>...>;
 
+    // Merge: same dimension, sum/difference non-zero
     template<Op op, typename Engine1, typename Engine2, typename DimensionPack1Head, typename ...DimensionPack1Tail, typename DimensionPack2Head, typename ...DimensionPack2Tail>
     auto mergeStep(const Quantity<Engine1, DimensionPack1Head, DimensionPack1Tail...> &, const Quantity<Engine2, DimensionPack2Head, DimensionPack2Tail...> &)
         -> std::enable_if_t<DimensionPack1Head::Dimension::baseDimensionId == DimensionPack2Head::Dimension::baseDimensionId
@@ -197,7 +203,7 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
                             decltype(mergeStep<op>(std::declval<Quantity<Engine1, DimensionPack1Tail...>>(), std::declval<Quantity<Engine2, DimensionPack2Tail...>>()))
                     >>;
 
-
+    // Merge: same dimension, sum/difference == 0 -> remove dimension
     template<Op op, typename Engine1, typename Engine2, typename DimensionPack1Head, typename ...DimensionPack1Tail, typename DimensionPack2Head, typename ...DimensionPack2Tail>
     auto mergeStep(const Quantity<Engine1, DimensionPack1Head, DimensionPack1Tail...> &, const Quantity<Engine2, DimensionPack2Head, DimensionPack2Tail...> &)
         -> std::enable_if_t<DimensionPack1Head::Dimension::baseDimensionId == DimensionPack2Head::Dimension::baseDimensionId
@@ -205,6 +211,7 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
                 decltype(mergeStep<op>(std::declval<Quantity<Engine1, DimensionPack1Tail...>>(), std::declval<Quantity<Engine2, DimensionPack2Tail...>>()))
         >;
 
+    // Merge: lhs dimension < rhs dimension -> insert lhs dimension into result
     template<Op op, typename Engine1, typename Engine2, typename DimensionPack1Head, typename ...DimensionPack1Tail, typename DimensionPack2Head, typename ...DimensionPack2Tail>
     auto mergeStep(const Quantity<Engine1, DimensionPack1Head, DimensionPack1Tail...> &, const Quantity<Engine2, DimensionPack2Head, DimensionPack2Tail...> &)
         -> std::enable_if_t<(DimensionPack1Head::Dimension::baseDimensionId < DimensionPack2Head::Dimension::baseDimensionId),
@@ -213,6 +220,7 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
                     >>;
 
 
+    // Merge: lhs dimension > rhs dimension -> insert rhs dimension into result
     template<Op op, typename Engine1, typename Engine2, typename DimensionPack1Head, typename ...DimensionPack1Tail, typename DimensionPack2Head, typename ...DimensionPack2Tail>
     auto mergeStep(const Quantity<Engine1, DimensionPack1Head, DimensionPack1Tail...> &, const Quantity<Engine2, DimensionPack2Head, DimensionPack2Tail...> &)
         -> std::enable_if_t<(DimensionPack1Head::Dimension::baseDimensionId > DimensionPack2Head::Dimension::baseDimensionId),
