@@ -62,6 +62,9 @@ struct SI_units_template {
     static constexpr typename Engine::Mass kt = 1.0e+6 * kg;
     static constexpr typename Engine::Mass Mt = 1.0e+9 * kg;
     static constexpr typename Engine::Mass Gt = 1.0e+12 * kg;
+    static constexpr typename Engine::Mass u = 1.660539040e-27 * kg;
+    static constexpr typename Engine::Mass Da = u;
+
 
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Mass, 2>> kg2 = kg * kg; // to ease writing of other units, like F = A2 * s4 / kg / m2
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Mass, 3>> kg3 = kg * kg * kg;
@@ -75,6 +78,7 @@ struct SI_units_template {
     static constexpr typename Engine::Length pm = 1.0e-12 * m;
     static constexpr typename Engine::Length fm = 1.0e-15 * m;
     static constexpr typename Engine::Length km = 1.0e+3  * m;
+    static constexpr typename Engine::Length au = 149'597'870'700 * m;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Length, 4>> m4 = m * m * m * m; // to ease writing of other units, like F = A2 * s4 / kg / m2
 
 
@@ -148,10 +152,12 @@ struct SI_units_template {
 
 
     static constexpr typename Engine::Velocity kmh = 1.0 / 3.6 * m / s;
+    static constexpr typename Engine::Acceleration Gal = 0.01 * m / s2; // galileo
 
 
     static constexpr double rad = 1.0; // radian
     static constexpr double sr = 1.0; // steradian
+    static constexpr double deg = M_PI / 180.0 * rad; // degree
 
 
 #define DEFINE_DERIVED_UNIT(Dimension, Unit, Definition) \
@@ -196,6 +202,7 @@ struct SI_units_template {
     static constexpr typename Engine::Pressure mbar = 1.0e+2  * Pa;
     static constexpr typename Engine::Pressure ubar = 1.0e-1  * Pa;
     static constexpr typename Engine::Pressure atm = 1'013.25 * hPa; // atmosphere
+    static constexpr typename Engine::Pressure Ba = 0.1 * Pa; // barye
 
 
 

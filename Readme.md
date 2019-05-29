@@ -17,6 +17,7 @@ the box.
 Missing so far:
 * fractional exponents
 * support for arithmetic types other than double
+* non proportionate units (e.g. °C or dB)
 
 ### Install
 
