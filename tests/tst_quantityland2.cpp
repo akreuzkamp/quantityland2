@@ -244,7 +244,8 @@ static_assert(v1.numericalValue() == 1'000'000);
 static_assert(CGS::units::m.numericalValue() == 100);
 static_assert(CGS::units::s.numericalValue() == 1);
 static_assert((CGS::units::m / CGS::units::s).numericalValue() == 100);
-static_assert(CGS::constants::c0.numericalValue() == 29'979'245'800);
+static_assert(CGS::constants::c_0.numericalValue() == 29'979'245'800);
+
 
 
 // Conversion
@@ -295,7 +296,7 @@ static_assert(nu_l.numericalValue() == nu_t.numericalValue());
 
 constexpr Quantity<SI, DimensionComponent<Mass, -1>> tmp = nu_l;
 static_assert(tmp.numericalValue() != nu_l.numericalValue());
-constexpr SI::Length si_l = tmp * SI::constants::hbar / SI::constants::c0;
+constexpr SI::Length si_l = tmp * SI::constants::h_bar / SI::constants::c_0;
 // static_assert(si_l == 1.97e-7_m);
 static_assert(convertToSI<SI::Mass>(1.0 * NaturalUnits::units::eV).numericalValue() == 1.782662e-36);
 static_assert(convertToSI<SI::Length>(1.0 / NaturalUnits::units::eV).numericalValue() == 1.97327e-7);
