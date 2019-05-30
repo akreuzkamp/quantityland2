@@ -271,7 +271,6 @@ void piTimesTenToTheSeven() {
     auto a = 149597870700_m;
     std::cout << "A year lasts " << root<2>(kepler(sunMass + earthMass, a)) << std::endl;
 
-
     std::cout << "sunMass: " << sunMass << std::endl;
     std::cout << "earthMass: " << earthMass << std::endl;
     std::cout << "a: " << a << std::endl;
@@ -287,6 +286,14 @@ void piTimesTenToTheSeven() {
 
 
 // Test natural units
+constexpr double fuzzy_equal(double lhs, double rhs, double fuzzy_threshold = 1.0e-6)
+{
+    double diff = rhs - lhs;
+    double sum = rhs + lhs;
+    if (diff > 0) return (diff / sum) < fuzzy_threshold;
+    else return (-diff / sum) < fuzzy_threshold;
+}
+
 constexpr NaturalUnits::Mass nu_m = 5.0 * NaturalUnits::units::eV;
 constexpr NaturalUnits::Length nu_l = 5.0 / NaturalUnits::units::eV;
 constexpr NaturalUnits::Time nu_t = nu_l;
@@ -296,14 +303,39 @@ static_assert(nu_l.numericalValue() == nu_t.numericalValue());
 
 constexpr Quantity<SI, DimensionComponent<Mass, -1>> tmp = nu_l;
 static_assert(tmp.numericalValue() != nu_l.numericalValue());
-constexpr SI::Length si_l = tmp * SI::constants::h_bar / SI::constants::c_0;
-// static_assert(si_l == 1.97e-7_m);
-static_assert(convertToSI<SI::Mass>(1.0 * NaturalUnits::units::eV).numericalValue() == 1.782662e-36);
-static_assert(convertToSI<SI::Length>(1.0 / NaturalUnits::units::eV).numericalValue() == 1.97327e-7);
-static_assert(convertToSI<SI::Time>(1.0 / NaturalUnits::units::eV).numericalValue() == 6.582119e-16);
-static_assert(convertToSI<SI::Temperature>(1.0 * NaturalUnits::units::eV).numericalValue() == 1.1604505e4);
-// static_assert(convertToSI<SI::Force>(1.0 * NaturalUnits::units::eV * NaturalUnits::units::eV).numericalValue() == 1.78e-36 * 1.97e-7 / 6.58e-16 / 6.58e-16);
-// constexpr auto asoiuoiudf = convertToSI<SI::Length>(1.0 * NaturalUnits::units::eV);
+constexpr auto si_l_man = tmp * SI::constants::h_bar / SI::constants::c_0;
+constexpr auto si_l_auto = NaturalUnits::toSiDimensions<SI::Length>(nu_l);
+constexpr auto cgs_l_auto = NaturalUnits::toSiDimensions<CGS::Length>(nu_l);
+constexpr NaturalUnits::Length nu_l2 = si_l_man / SI::constants::h_bar * SI::constants::c_0;
+constexpr NaturalUnits::Length nu_l3 = NaturalUnits::fromSiDimensions(si_l_man);
+constexpr NaturalUnits::Length nu_l4 = si_l_auto / SI::constants::h_bar * SI::constants::c_0;
+constexpr NaturalUnits::Length nu_l5 = NaturalUnits::fromSiDimensions(si_l_auto);
+constexpr NaturalUnits::Time minInNU_auto = NaturalUnits::fromSiDimensions(SI::units::min);
+constexpr NaturalUnits::Time minInNU_man = SI::units::min / SI::constants::h_bar * SI::constants::c_0 * SI::constants::c_0;
+
+
+static_assert(fuzzy_equal(NaturalUnits::fromSiDimensions(SI::units::eV).numericalValue(), 1.0));
+static_assert(fuzzy_equal(nu_l.numericalValue(), nu_l2.numericalValue())); // converting to si and back manually gives the original value
+static_assert(fuzzy_equal(nu_l.numericalValue(), nu_l3.numericalValue())); // converting to si manually and automatically back gives the original value
+static_assert(fuzzy_equal(nu_l.numericalValue(), nu_l4.numericalValue())); // converting to si automatically and back manually gives the original value
+static_assert(fuzzy_equal(nu_l.numericalValue(), nu_l5.numericalValue())); // converting to si and back automatically gives the original value
+static_assert(fuzzy_equal(si_l_auto.numericalValue(), si_l_man.numericalValue())); // automatic and manual conversion to si are identical
+static_assert(fuzzy_equal(100 * si_l_auto.numericalValue(), cgs_l_auto.numericalValue())); // automatic conversion to SI-derived SoU works as expected
+static_assert(fuzzy_equal(minInNU_auto.numericalValue(), minInNU_man.numericalValue())); // automatic and manual conversion from si are identical
+static_assert(fuzzy_equal(minInNU_auto.numericalValue(), minInNU_man.numericalValue())); //
+
+static_assert(NaturalUnits::toSiDimensions<SI::Mass>(1.0 * NaturalUnits::units::eV).numericalValue() == 1.782662e-36);
+static_assert(NaturalUnits::toSiDimensions<SI::Length>(1.0 / NaturalUnits::units::eV).numericalValue() == 1.97327e-7);
+static_assert(NaturalUnits::toSiDimensions<SI::Time>(1.0 / NaturalUnits::units::eV).numericalValue() == 6.582119e-16);
+static_assert(NaturalUnits::toSiDimensions<SI::Temperature>(1.0 * NaturalUnits::units::eV).numericalValue() == 1.1604505e4);
+static_assert(fuzzy_equal(NaturalUnits::toSiDimensions<SI::Force>(1.0 * NaturalUnits::units::eV * NaturalUnits::units::eV).numericalValue(), 1.782662e-36 * 1.97327e-7 / 6.582119e-16 / 6.582119e-16));
+
+constexpr auto cmInNU = NaturalUnits::fromSiDimensions(SI::units::cm);
+constexpr auto cmInNU2 = NaturalUnits::fromSiDimensions(CGS::units::cm);
+constexpr auto cminpereV = 1.0 * SI::units::cm / SI::constants::h_bar / SI::constants::c_0 * SI::units::eV;
+static_assert(fuzzy_equal(cmInNU.numericalValue(), cminpereV));
+static_assert(fuzzy_equal(cmInNU.numericalValue(), cmInNU2.numericalValue()));
+
 void relativisticKinematic()
 {
     std::cout << "====Relativistic Kinematic====\n";
@@ -319,15 +351,17 @@ void relativisticKinematic()
     NaturalUnits::Energy deltaE1 = p2 - p1;
     NaturalUnits::Energy deltaE2 = E2 - E1;
     std::cout << "deltaE1 == " << (deltaE1 / NaturalUnits::units::eV) << "eV." << std::endl;
-    std::cout << "deltaE1 == " << (convertToSI<SI::Energy>(deltaE1) / SI::units::eV) << "eV." << std::endl;
+    std::cout << "deltaE1 == " << (NaturalUnits::toSiDimensions<SI::Energy>(deltaE1) / SI::units::eV) << "eV." << std::endl;
     std::cout << "deltaE2 == " << (deltaE2 / NaturalUnits::units::eV) << "eV." << std::endl;
-    std::cout << "deltaE2 == " << (convertToSI<SI::Energy>(deltaE2) / SI::units::eV) << "eV." << std::endl;
-//     assert(std::abs(deltaE / NaturalUnits::units::eV - convertToSI<SI::Energy>(deltaE) / SI::units::eV) / (deltaE / NaturalUnits::units::eV) < 0.000'001);
+    std::cout << "deltaE2 == " << (NaturalUnits::toSiDimensions<SI::Energy>(deltaE2) / SI::units::eV) << "eV." << std::endl;
+//     assert(std::abs(deltaE / NaturalUnits::units::eV - NaturalUnits::toSiDimensions<SI::Energy>(deltaE) / SI::units::eV) / (deltaE / NaturalUnits::units::eV) < 0.000'001);
 }
 
 // constexpr NaturalUnits::Energy E =
 
 int main() {
+    std::cout << "Natural Units conversion: " << minInNU_auto << " " << minInNU_man << " " << std::endl;
+
     // Test cout
     std::cout << 100_m << std::endl;
     std::cout << 100 * CGS::units::cm << std::endl;
@@ -339,7 +373,7 @@ int main() {
 
     std::cout << "====Failures===" << std::endl;
     std::cout << "tmp: " << tmp << std::endl;
-    std::cout << "si_l: " << si_l << std::endl;
+    std::cout << "si_l: " << si_l_man << std::endl;
 
     std::cout << (1.0 * NaturalUnits::units::eV * NaturalUnits::units::eV).numericalValue() << std::endl;
 

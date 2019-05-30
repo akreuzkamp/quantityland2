@@ -154,6 +154,12 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
     template<typename Quantity1, typename Quantity2>
     constexpr bool hasSameDimension_v = decltype(hasSameDimension(std::declval<Quantity1>(), std::declval<Quantity2>()))::value;
 
+    template<typename NewEngine, typename OldEngine, typename ...DimensionPack>
+    auto changeEngine(Quantity<OldEngine, DimensionPack...>) -> Quantity<NewEngine, DimensionPack...>;
+
+    template<typename NewEngine, typename Quantity>
+    using changeEngine_t = decltype(changeEngine<NewEngine>(std::declval<Quantity>()));
+
     template<typename Engine, typename Head, typename ...Tail>
     auto prepend(Head, Quantity<Engine, Tail...>) -> Quantity<Engine, Head, Tail...>;
 
