@@ -109,8 +109,8 @@ parameter, things get more complex.
 Fortunately, Quantityland2 comes with a long list of predefined type aliases for common physical
 quantities. E.g. SI::Permittivity is a type alias for
 ```
-Quantity<SI, DimensionComponent<base_dimensions::Length, -3>,
-             DimensionComponent<base_dimensions::Mass, -1>,
+Quantity<SI, DimensionComponent<base_dimensions::Mass, -1>,
+             DimensionComponent<base_dimensions::Length, -3>,
              DimensionComponent<base_dimensions::Time, 4>,
              DimensionComponent<base_dimensions::ElectricCurrent, 2>>;
 ```
@@ -118,7 +118,7 @@ Quantity<SI, DimensionComponent<base_dimensions::Length, -3>,
 Still, we can't name all possible quantities, you might work with. Working with the bare, bold
 quantity type identifiers is not only tedious, but also error prone. This is because in order to
 keep the internals of Quantityland2 maintainable, the dimension components in quantities must
-maintain a strict ordering (first Length, then Mass, then Time, etc.).
+maintain a strict ordering (first Mass, then Length, then Time, etc.).
 
 Thus, we recommend you to define type aliases for all quantities you use regularly. By using
 decltype, you can circumvent ever having to specify quantity type-names explicitly:

@@ -53,46 +53,46 @@ static_assert(std::is_same_v<detail::mergeMul_t<
 static_assert(std::is_same_v<detail::mergeMul_t<
     Quantity<void, DimensionComponent<Mass, 1>>,
     Quantity<void, DimensionComponent<Length, 1>> >,
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 1>>
+    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 1>>
 >);
 static_assert(std::is_same_v<detail::mergeMul_t<
     Quantity<void, DimensionComponent<Length, 1>>,
     Quantity<void, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 1>>
+    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 1>>
 >);
 static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
+    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
     Quantity<void, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 3>>
+    Quantity<void, DimensionComponent<Mass, 3>, DimensionComponent<Length, 1>>
 >);
 static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
-    Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Length, 4>, DimensionComponent<Mass, 3>>
+    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
+    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 3>> >,
+    Quantity<void, DimensionComponent<Mass, 3>, DimensionComponent<Length, 4>>
 >);
 static_assert(std::is_same_v<detail::mergeMul_t<
     Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Time, 2>>,
-    Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Length, 4>, DimensionComponent<Mass, 1>, DimensionComponent<Time, 2>>
+    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 3>> >,
+    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 4>, DimensionComponent<Time, 2>>
 >);
 static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
+    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
     Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Time, -1>> >,
-    Quantity<void, DimensionComponent<Length, 4>, DimensionComponent<Mass, 2>, DimensionComponent<Time, -1>>
+    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 4>, DimensionComponent<Time, -1>>
 >);
 static_assert(std::is_same_v<detail::mergeMul_t<
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
-        Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Mass, -2>> >,
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
+        Quantity<void, DimensionComponent<Mass, -2>, DimensionComponent<Length, 3>> >,
         Quantity<void, DimensionComponent<Length, 4>>
 >);
 static_assert(std::is_same_v<detail::mergeMul_t<
-Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 1>, DimensionComponent<Time, 1>>,
+Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 1>, DimensionComponent<Time, 1>>,
 Quantity<void, DimensionComponent<Length, 1>> >,
-Quantity<void, DimensionComponent<Length, 2>, DimensionComponent<Mass, 1>, DimensionComponent<Time, 1>>
+Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 2>, DimensionComponent<Time, 1>>
 >);
 static_assert(std::is_same_v<detail::mergeMul_t<
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
-        Quantity<void, DimensionComponent<Length, -1>, DimensionComponent<Mass, -2>> >,
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
+        Quantity<void, DimensionComponent<Mass, -2>, DimensionComponent<Length, -1>> >,
         double
 >);
 
@@ -115,46 +115,46 @@ static_assert(std::is_same_v<detail::mergeDiv_t<
 static_assert(std::is_same_v<detail::mergeDiv_t<
     Quantity<void, DimensionComponent<Mass, 1>>,
     Quantity<void, DimensionComponent<Length, 1>> >,
-    Quantity<void, DimensionComponent<Length, -1>, DimensionComponent<Mass, 1>>
+    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, -1>>
 >);
 static_assert(std::is_same_v<detail::mergeDiv_t<
     Quantity<void, DimensionComponent<Length, 1>>,
     Quantity<void, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, -1>>
+    Quantity<void, DimensionComponent<Mass, -1>, DimensionComponent<Length, 1>>
 >);
 static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
+    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
     Quantity<void, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 1>>
+    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 1>>
 >);
 static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
-    Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Length, -2>, DimensionComponent<Mass, 1>>
+    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
+    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 3>> >,
+    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, -2>>
 >);
 static_assert(std::is_same_v<detail::mergeDiv_t<
     Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Time, 2>>,
-    Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Length, -2>, DimensionComponent<Mass, -1>, DimensionComponent<Time, 2>>
+    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 3>> >,
+    Quantity<void, DimensionComponent<Mass, -1>, DimensionComponent<Length, -2>, DimensionComponent<Time, 2>>
 >);
 static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
+    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
     Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Time, -1>> >,
-    Quantity<void, DimensionComponent<Length, -2>, DimensionComponent<Mass, 2>, DimensionComponent<Time, 1>>
+    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, -2>, DimensionComponent<Time, 1>>
 >);
 static_assert(std::is_same_v<detail::mergeDiv_t<
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
-        Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Mass, 2>> >,
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 3>> >,
         Quantity<void, DimensionComponent<Length, -2>>
 >);
 static_assert(std::is_same_v<detail::mergeDiv_t<
-Quantity<void, DimensionComponent<Length, -1>, DimensionComponent<Mass, 1>, DimensionComponent<Time, 1>>,
+Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, -1>, DimensionComponent<Time, 1>>,
 Quantity<void, DimensionComponent<Length, 1>> >,
-Quantity<void, DimensionComponent<Length, -2>, DimensionComponent<Mass, 1>, DimensionComponent<Time, 1>>
+Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, -2>, DimensionComponent<Time, 1>>
 >);
 static_assert(std::is_same_v<detail::mergeDiv_t<
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>,
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>> >,
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >,
         double
 >);
 
@@ -162,47 +162,47 @@ static_assert(std::is_same_v<detail::mergeDiv_t<
 // Multiplication / Division with/by scalars
 
 static_assert(std::is_same_v<decltype(
-            std::declval<Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>> >() * std::declval<double>()
+            std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >() * std::declval<double>()
         ),
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
 >);
 static_assert(std::is_same_v<decltype(
-            std::declval<double>() * std::declval<Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>> >()
+            std::declval<double>() * std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >()
         ),
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>
->);
-
-static_assert(std::is_same_v<decltype(
-            std::declval<Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>> >() / std::declval<double>()
-        ),
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>
->);
-static_assert(std::is_same_v<decltype(
-            std::declval<double>() / std::declval<Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>> >()
-        ),
-        Quantity<void, DimensionComponent<Length, -1>, DimensionComponent<Mass, -2>>
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
 >);
 
 static_assert(std::is_same_v<decltype(
-            std::declval<Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>> >() * std::declval<int>()
+            std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >() / std::declval<double>()
         ),
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
 >);
 static_assert(std::is_same_v<decltype(
-            std::declval<int>() * std::declval<Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>> >()
+            std::declval<double>() / std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >()
         ),
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>
+        Quantity<void, DimensionComponent<Mass, -2>, DimensionComponent<Length, -1>>
 >);
 
 static_assert(std::is_same_v<decltype(
-            std::declval<Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>> >() / std::declval<int>()
+            std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >() * std::declval<int>()
         ),
-        Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>>
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
 >);
 static_assert(std::is_same_v<decltype(
-            std::declval<int>() / std::declval<Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Mass, 2>> >()
+            std::declval<int>() * std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >()
         ),
-        Quantity<void, DimensionComponent<Length, -1>, DimensionComponent<Mass, -2>>
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
+>);
+
+static_assert(std::is_same_v<decltype(
+            std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >() / std::declval<int>()
+        ),
+        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
+>);
+static_assert(std::is_same_v<decltype(
+            std::declval<int>() / std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >()
+        ),
+        Quantity<void, DimensionComponent<Mass, -2>, DimensionComponent<Length, -1>>
 >);
 
 // Addition and substraction
