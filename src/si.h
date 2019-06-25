@@ -352,10 +352,9 @@ struct SI_constants_template {
 };
 
 
-template<typename SystemOfUnits>
+template<typename Engn>
 struct SiDimensions
 {
-    using Engn = Engine<SystemOfUnits, SiDimensions>;
     template<typename T, int Exponent> using Dim = DimensionComponent<T, Exponent>;
 
     using Length = Quantity<Engn, Dim<base_dimensions::Length, 1>>;
@@ -457,20 +456,16 @@ struct SiDimensions
 
 };
 
-struct SiConfig
+struct SI : public SiDimensions<SI>
 {
     using referenceEngine = void;
 
     template<typename T> static constexpr auto unitString = detail::unitString<T>;
     template<typename T> static constexpr double baseUnit = 1.0;
 
-//     static constexpr Quantity<SI, DimensionComponent<Length, 3>, DimensionComponent<Mass, -1>, DimensionComponent<Time, -2>> G = ;
-
-    using units = SI_units_template<Engine<SiConfig, SiDimensions>>;
-    using constants = SI_constants_template<Engine<SiConfig, SiDimensions>>;
+    using units = SI_units_template<SI>;
+    using constants = SI_constants_template<SI>;
 };
-
-using SI = Engine<SiConfig, SiDimensions>;
 
 
 namespace SI_literals {

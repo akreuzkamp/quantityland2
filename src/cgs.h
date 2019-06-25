@@ -25,30 +25,20 @@
 
 namespace Quantityland2 {
 
-namespace detail {
-    template<typename T> constexpr double baseUnit = 1.0;
-    template<> constexpr SI::Length baseUnit<typename base_dimensions::Length> = 0.01 * SI::units::m;
-    template<> constexpr SI::Mass baseUnit<typename base_dimensions::Mass> = 0.001 * SI::units::kg;
-    template<> constexpr SI::Time baseUnit<typename base_dimensions::Time> = 1.0 * SI::units::s;
-    template<> constexpr SI::ElectricCurrent baseUnit<typename base_dimensions::ElectricCurrent> = 1.0 * SI::units::A;
-} // namespac detail
-
-struct CgsConfig
+struct CGS : public SiDimensions<CGS>
 {
     using referenceEngine = SI;
 
-    template<typename T> static constexpr auto baseUnit = detail::baseUnit<T>;
+    template<typename T> static constexpr double baseUnit = 1.0;
 
-//     template<typename T> static constexpr double baseUnit = 1.0;
-//     template<> static constexpr SI::Length baseUnit<typename base_dimensions::Length> = 0.01 * SI::units::m;
-//     template<> static constexpr SI::Mass baseUnit<typename base_dimensions::Mass> = 0.001 * SI::units::kg;
-//     template<> static constexpr SI::Time baseUnit<typename base_dimensions::Time> = 0.001 * SI::units::s;
-
-    using units = SI_units_template<Engine<CgsConfig, SiDimensions>>;
-    using constants = SI_constants_template<Engine<CgsConfig, SiDimensions>>;
+    using units = SI_units_template<CGS>;
+    using constants = SI_constants_template<CGS>;
 };
 
-using CGS = Engine<CgsConfig, SiDimensions>;
+template<> constexpr SI::Length CGS::baseUnit<typename base_dimensions::Length> = 0.01 * SI::units::m;
+template<> constexpr SI::Mass CGS::baseUnit<typename base_dimensions::Mass> = 0.001 * SI::units::kg;
+template<> constexpr SI::Time CGS::baseUnit<typename base_dimensions::Time> = 1.0 * SI::units::s;
+template<> constexpr SI::ElectricCurrent CGS::baseUnit<typename base_dimensions::ElectricCurrent> = 1.0 * SI::units::A;
 
 } // namespace Quantityland2
 

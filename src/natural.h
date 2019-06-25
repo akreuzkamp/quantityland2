@@ -26,9 +26,6 @@
 namespace Quantityland2 {
 
 namespace natural::detail {
-    template<typename T> constexpr double baseUnit = 1.0;
-    template<> constexpr SI::Mass baseUnit<typename base_dimensions::Mass> = 1.782662e-36 * SI::units::kg;
-
     template<typename BaseDimension> constexpr int massDimension_v = 0;
     template<> constexpr int massDimension_v<base_dimensions::Length> = -1;
     template<> constexpr int massDimension_v<base_dimensions::Mass> = +1;
@@ -81,27 +78,25 @@ namespace natural::detail {
     template<typename Engine, typename ...DimensionPack>
     constexpr double toSI_conversionFactor_v<Quantity<Engine, DimensionPack...>> = toSI_conversionFactor<Quantity<Engine, DimensionPack...>>::value;
 
-    template<typename T> constexpr auto unitString = "";
-    template<> constexpr auto unitString<typename base_dimensions::Mass> = "eV";
 
 } // namespac detail
 
-template<typename SoU>
+template<typename Engn>
 struct MassDimensions
 {
-    using Length = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, -1>>;
-    using Mass = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, 1>>;
-    using Time = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, -1>>;
-    using ElectricCurrent = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, 1>>;
-    using Temperature = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, 1>>;
+    using Length = Quantity<Engn, DimensionComponent<base_dimensions::Mass, -1>>;
+    using Mass = Quantity<Engn, DimensionComponent<base_dimensions::Mass, 1>>;
+    using Time = Quantity<Engn, DimensionComponent<base_dimensions::Mass, -1>>;
+    using ElectricCurrent = Quantity<Engn, DimensionComponent<base_dimensions::Mass, 1>>;
+    using Temperature = Quantity<Engn, DimensionComponent<base_dimensions::Mass, 1>>;
 
-    using Area = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, -2>>;
-    using Volume = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, -3>>;
+    using Area = Quantity<Engn, DimensionComponent<base_dimensions::Mass, -2>>;
+    using Volume = Quantity<Engn, DimensionComponent<base_dimensions::Mass, -3>>;
     using Velocity = double;
-    using Momentum = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, 1>>;
-    using Acceleration = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, 1>>;
-    using Force = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, 2>>;
-    using Energy = Quantity<Engine<SoU, MassDimensions>, DimensionComponent<base_dimensions::Mass, 1>>;
+    using Momentum = Quantity<Engn, DimensionComponent<base_dimensions::Mass, 1>>;
+    using Acceleration = Quantity<Engn, DimensionComponent<base_dimensions::Mass, 1>>;
+    using Force = Quantity<Engn, DimensionComponent<base_dimensions::Mass, 2>>;
+    using Energy = Quantity<Engn, DimensionComponent<base_dimensions::Mass, 1>>;
 };
 
 template<typename Engine>
@@ -119,17 +114,11 @@ struct NaturalUnits_constants_template {
 //     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Length, 3>, DimensionComponent<base_dimensions::Mass, -1>, DimensionComponent<base_dimensions::Time, -2>> G = 6.67408e-11 * (units::m3 / units::kg / units::s / units::s);
 };
 
-struct NaturalConfig
+struct NaturalUnits : public MassDimensions<NaturalUnits>
 {
     using referenceEngine = SI; // TODO: Remove
-    template<typename T> static constexpr auto baseUnit = natural::detail::baseUnit<T>;
-    template<typename T> static constexpr auto unitString = natural::detail::unitString<T>;
-
-//     template<typename T> static constexpr double baseUnit = 1.0;
-//     template<> static constexpr SI::Length baseUnit<typename base_dimensions::Length> = 0.01 * SI::units::m;
-//     template<> static constexpr SI::Mass baseUnit<typename base_dimensions::Mass> = 0.001 * SI::units::kg;
-//     template<> static constexpr SI::Time baseUnit<typename base_dimensions::Time> = 0.001 * SI::units::s;
-
+    template<typename T> static constexpr double baseUnit = 1.0;
+    template<typename T> static constexpr auto unitString = "";
 
     /**
      * Converts a quantity from natural units to \p TargetQuantity.
@@ -145,10 +134,10 @@ struct NaturalConfig
      * \p inputValue.
      */
     template<typename TargetQuantity, int massDimension>
-    static constexpr auto toSiDimensions(Quantity<Engine<NaturalConfig, MassDimensions>, DimensionComponent<base_dimensions::Mass, massDimension>> inputValue)
+    static constexpr auto toSiDimensions(Quantity<NaturalUnits, DimensionComponent<base_dimensions::Mass, massDimension>> inputValue)
     -> TargetQuantity
     {
-        static_assert(natural::detail::canConvertToSIDimensions_v<Quantity<Engine<NaturalConfig, MassDimensions>, DimensionComponent<base_dimensions::Mass, massDimension>>, TargetQuantity>,
+        static_assert(natural::detail::canConvertToSIDimensions_v<Quantity<NaturalUnits, DimensionComponent<base_dimensions::Mass, massDimension>>, TargetQuantity>,
                       "Can't convert to SI: Mass dimension of source and SI dimension of target do not match.");
 
         using IntermediateSIQuantity = detail::changeEngine_t<SI, TargetQuantity>;
@@ -167,20 +156,20 @@ struct NaturalConfig
      */
     template<typename SourceEngine, typename ...DimensionPack>
     static constexpr auto fromSiDimensions(Quantity<SourceEngine, DimensionPack...> inputValue)
-    -> natural::detail::MassDimension_t<Quantity<Engine<NaturalConfig, MassDimensions>, DimensionPack...>>
+    -> natural::detail::MassDimension_t<Quantity<NaturalUnits, DimensionPack...>>
     {
         Quantity<SI, DimensionPack...> tmp = inputValue;
 
-        return natural::detail::MassDimension_t<Quantity<Engine<NaturalConfig, MassDimensions>, DimensionPack...>>::fromNumericalValue(
+        return natural::detail::MassDimension_t<Quantity<NaturalUnits, DimensionPack...>>::fromNumericalValue(
             tmp.numericalValue() / natural::detail::toSI_conversionFactor_v<Quantity<SourceEngine, DimensionPack...>>
         );
     }
 
-    using units = NaturalUnits_units_template<Engine<NaturalConfig, MassDimensions>>;
-    using constants = NaturalUnits_constants_template<Engine<NaturalConfig, MassDimensions>>;
+    using units = NaturalUnits_units_template<NaturalUnits>;
+    using constants = NaturalUnits_constants_template<NaturalUnits>;
 };
-
-using NaturalUnits = Engine<NaturalConfig, MassDimensions>;
+template<> constexpr SI::Mass NaturalUnits::baseUnit<typename base_dimensions::Mass> = 1.782662e-36 * SI::units::kg;
+template<> constexpr auto NaturalUnits::unitString<typename base_dimensions::Mass> = "eV";
 
 } // namespace Quantityland2
 

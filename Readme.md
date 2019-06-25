@@ -105,32 +105,28 @@ In fact, this is where Quantityland2 really shines. You will be able to express 
 in SI-units and still have the underlying calculation be done in multiples of your characteristic
 quantities.
 
-To allow that, we need to derive our own system of units from the SI. Don't worry, that's not
-complicated at all.
+To allow that, we need to define, what in Quantityland2 is called an Engine. The Engine is a type,
+which contains all quantity-types, unit variables and constants as static members and sub types
+(Quantityland2::SI is such an engine). Don't worry, creating a custom engine is not complicated at
+all!
 
 ```
 using namespace Quantityland2;
 
-namespace detail {
-    template<typename T> constexpr double baseUnit = 1.0; // base template to be specialized
-    template<> constexpr SI::Length baseUnit<typename base_dimensions::Length> = 0.14e-9 * SI::units::m; // average bond length in a C60-fullerene
-    template<> constexpr SI::Mass baseUnit<typename base_dimensions::Mass> = 1.1967e-24 * SI::units::kg; // mass of a C60-fullerene
-    template<> constexpr SI::Time baseUnit<typename base_dimensions::Time> = 1.0 * SI::units::s;
-    template<> constexpr SI::ElectricCurrent baseUnit<typename base_dimensions::ElectricCurrent> = 1.0 * SI::units::A;
-    // defining this outside the C60Config struct is necessary to prevent cycles in template instantiation.
-} // namespace detail
-
-struct C60Config
+struct C60Quantities : public SiDimensions<C60Quantities>
 {
-    using referenceEngine = SI; // inherit from SI
+    using referenceEngine = SI; // allow conversion from/to SI and other SI-derived engines
 
-    template<typename T> static constexpr auto baseUnit = detail::baseUnit<T>; // base units in SI units, allows automatic unit conversion
+    template<typename T> static constexpr auto baseUnit = 1.0; // this is only there to be specialized
 
-    using units = SI_units_template<Engine<C60Config, SiDimensions>>; // inherit basic unit constants (like m, kg, s) from SI
-    using constants = SI_constants_template<Engine<C60Config, SiDimensions>>;  // some common constants, readily represented in C60-units :)
+    using units = SI_units_template<Engine<C60Config>>; // inherit basic unit constants (like m, kg, s) from SI
+    using constants = SI_constants_template<Engine<C60Config>>;  // some common constants, readily represented in C60-units :)
 };
-
-using C60Quantities = Engine<C60Config, SiDimensions>;
+// base units in SI units, allows automatic unit conversion (ISO C++ requires specializations of member templates to happen outside the class)
+template<> constexpr SI::Length          C60Quantities::baseUnit<typename base_dimensions::Length> = 0.14e-9 * SI::units::m; // average bond length in a C60-fullerene
+template<> constexpr SI::Mass            C60Quantities::baseUnit<typename base_dimensions::Mass> = 1.1967e-24 * SI::units::kg; // mass of a C60-fullerene
+template<> constexpr SI::Time            C60Quantities::baseUnit<typename base_dimensions::Time> = 1.0 * SI::units::s;
+template<> constexpr SI::ElectricCurrent C60Quantities::baseUnit<typename base_dimensions::ElectricCurrent> = 1.0 * SI::units::A;
 
 int main()
 {

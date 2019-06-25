@@ -320,7 +320,7 @@ static_assert(fuzzy_equal(nu_l.numericalValue(), nu_l3.numericalValue())); // co
 static_assert(fuzzy_equal(nu_l.numericalValue(), nu_l4.numericalValue())); // converting to si automatically and back manually gives the original value
 static_assert(fuzzy_equal(nu_l.numericalValue(), nu_l5.numericalValue())); // converting to si and back automatically gives the original value
 static_assert(fuzzy_equal(si_l_auto.numericalValue(), si_l_man.numericalValue())); // automatic and manual conversion to si are identical
-static_assert(fuzzy_equal(100 * si_l_auto.numericalValue(), cgs_l_auto.numericalValue())); // automatic conversion to SI-derived SoU works as expected
+static_assert(fuzzy_equal(100 * si_l_auto.numericalValue(), cgs_l_auto.numericalValue())); // automatic conversion to SI-derived Engine works as expected
 static_assert(fuzzy_equal(minInNU_auto.numericalValue(), minInNU_man.numericalValue())); // automatic and manual conversion from si are identical
 static_assert(fuzzy_equal(minInNU_auto.numericalValue(), minInNU_man.numericalValue())); //
 
@@ -385,25 +385,20 @@ int main() {
 
 
 // Test own Engine
-namespace TestEngineConfigDetail {
-    template<typename T> constexpr auto baseUnit = 1.0;
-    template<> constexpr SI::Length baseUnit<typename base_dimensions::Length> = 149'597'870.7_km;
-    template<> constexpr SI::Mass baseUnit<typename base_dimensions::Mass> = 1.9884e30_kg;
-}
-
-struct TestEngineConfig
+struct TestEngine : public SiDimensions<TestEngine>
 {
     using referenceEngine = SI;
-    template<typename T> static constexpr auto baseUnit = TestEngineConfigDetail::baseUnit<T>;
+    template<typename T> static constexpr auto baseUnit = 1.0;
 };
-using TestEngine = Engine<TestEngineConfig, SiDimensions>;
+template<> constexpr SI::Length TestEngine::baseUnit<typename base_dimensions::Length> = 149'597'870.7_km;
+template<> constexpr SI::Mass   TestEngine::baseUnit<typename base_dimensions::Mass> = 1.9884e30_kg;
 
 constexpr CGS::Length cgsA = CGS::Length::fromNumericalValue(29'919'574'140'000);
-constexpr TestEngine::Length testSouA = cgsA;
-static_assert(testSouA.numericalValue() == 2.0);
+constexpr TestEngine::Length testEngnA = cgsA;
+static_assert(testEngnA.numericalValue() == 2.0);
 
-constexpr TestEngine::Mass testSouM = TestEngine::Mass::fromNumericalValue(10.0);
-constexpr CGS::Mass cgsM = testSouM;
+constexpr TestEngine::Mass testEngnM = TestEngine::Mass::fromNumericalValue(10.0);
+constexpr CGS::Mass cgsM = testEngnM;
 static_assert(cgsM.numericalValue() == 1.9884e34);
 
 // Test

@@ -282,7 +282,7 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
     // struct definesUnitString : std::false_type;
     auto definesUnitString(Args ...args) -> std::false_type;
     template<typename BaseUnit, typename Engine>
-    auto definesUnitString(const Engine &sou) -> std::enable_if_t< (Engine::template unitString<BaseUnit>, true) , std::true_type>;
+    auto definesUnitString(const Engine &) -> std::enable_if_t< (Engine::template unitString<BaseUnit>, true) , std::true_type>;
     template<typename BaseUnit, typename Engine>
     constexpr bool definesUnitString_v = decltype(definesUnitString<BaseUnit>(std::declval<Engine>()))::value;
 
@@ -537,12 +537,5 @@ std::ostream& operator<<(std::ostream& os, const Quantity<Engine, DimensionCompo
     }
     return os;
 }
-
-
-template<typename SystemOfUnits, template<typename> typename SystemOfDimensions>
-struct Engine : public SystemOfUnits, SystemOfDimensions<SystemOfUnits>
-{
-};
-
 
 }
