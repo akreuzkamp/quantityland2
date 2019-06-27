@@ -52,107 +52,108 @@ namespace detail {
 
 template<typename Engine>
 struct SI_units_template {
+    using Q = typename Engine::SystemOfDimensions;
     // Base units
-    static constexpr typename Engine::Mass kg = Engine::Mass::fromNumericalValue(1.0 * detail::kilogram_v<Engine>);
-    static constexpr typename Engine::Mass g = 1.0e-3 * kg;
-    static constexpr typename Engine::Mass mg = 1.0e-6 * kg;
-    static constexpr typename Engine::Mass ug = 1.0e-9 * kg;
-    static constexpr typename Engine::Mass ng = 1.0e-12 * kg;
-    static constexpr typename Engine::Mass t = 1.0e+3 * kg;
-    static constexpr typename Engine::Mass kt = 1.0e+6 * kg;
-    static constexpr typename Engine::Mass Mt = 1.0e+9 * kg;
-    static constexpr typename Engine::Mass Gt = 1.0e+12 * kg;
-    static constexpr typename Engine::Mass u = 1.660539040e-27 * kg;
-    static constexpr typename Engine::Mass Da = u;
+    static constexpr typename Q::Mass kg = Q::Mass::fromNumericalValue(1.0 * detail::kilogram_v<Engine>);
+    static constexpr typename Q::Mass g = 1.0e-3 * kg;
+    static constexpr typename Q::Mass mg = 1.0e-6 * kg;
+    static constexpr typename Q::Mass ug = 1.0e-9 * kg;
+    static constexpr typename Q::Mass ng = 1.0e-12 * kg;
+    static constexpr typename Q::Mass t = 1.0e+3 * kg;
+    static constexpr typename Q::Mass kt = 1.0e+6 * kg;
+    static constexpr typename Q::Mass Mt = 1.0e+9 * kg;
+    static constexpr typename Q::Mass Gt = 1.0e+12 * kg;
+    static constexpr typename Q::Mass u = 1.660539040e-27 * kg;
+    static constexpr typename Q::Mass Da = u;
 
 
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Mass, 2>> kg2 = kg * kg; // to ease writing of other units, like F = A2 * s4 / kg / m2
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Mass, 3>> kg3 = kg * kg * kg;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Mass, 4>> kg4 = kg * kg * kg * kg;
 
-    static constexpr typename Engine::Length m = Engine::Length::fromNumericalValue(1.0 * detail::meter_v<Engine>);
-    static constexpr typename Engine::Length cm = 1.0e-2  * m;
-    static constexpr typename Engine::Length mm = 1.0e-3  * m;
-    static constexpr typename Engine::Length um = 1.0e-6  * m;
-    static constexpr typename Engine::Length nm = 1.0e-9  * m;
-    static constexpr typename Engine::Length pm = 1.0e-12 * m;
-    static constexpr typename Engine::Length fm = 1.0e-15 * m;
-    static constexpr typename Engine::Length km = 1.0e+3  * m;
-    static constexpr typename Engine::Length au = 149'597'870'700 * m;
+    static constexpr typename Q::Length m = Q::Length::fromNumericalValue(1.0 * detail::meter_v<Engine>);
+    static constexpr typename Q::Length cm = 1.0e-2  * m;
+    static constexpr typename Q::Length mm = 1.0e-3  * m;
+    static constexpr typename Q::Length um = 1.0e-6  * m;
+    static constexpr typename Q::Length nm = 1.0e-9  * m;
+    static constexpr typename Q::Length pm = 1.0e-12 * m;
+    static constexpr typename Q::Length fm = 1.0e-15 * m;
+    static constexpr typename Q::Length km = 1.0e+3  * m;
+    static constexpr typename Q::Length au = 149'597'870'700 * m;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Length, 4>> m4 = m * m * m * m; // to ease writing of other units, like F = A2 * s4 / kg / m2
 
 
-    static constexpr typename Engine::Time s = Engine::Time::fromNumericalValue(1.0 * detail::second_v<Engine>);
-    static constexpr typename Engine::Time ms = 1.0e-3  * s;
-    static constexpr typename Engine::Time us = 1.0e-6  * s;
-    static constexpr typename Engine::Time ns = 1.0e-9  * s;
-    static constexpr typename Engine::Time ps = 1.0e-12 * s;
-    static constexpr typename Engine::Time fs = 1.0e-15 * s;
-    static constexpr typename Engine::Time min = 60 * s;
-    static constexpr typename Engine::Time h = 3'600 * s;
-    static constexpr typename Engine::Time d = 24 * 60 * 60 * s;
-    static constexpr typename Engine::Time yr = 365.25 * 24 * 60 * 60 * s;
+    static constexpr typename Q::Time s = Q::Time::fromNumericalValue(1.0 * detail::second_v<Engine>);
+    static constexpr typename Q::Time ms = 1.0e-3  * s;
+    static constexpr typename Q::Time us = 1.0e-6  * s;
+    static constexpr typename Q::Time ns = 1.0e-9  * s;
+    static constexpr typename Q::Time ps = 1.0e-12 * s;
+    static constexpr typename Q::Time fs = 1.0e-15 * s;
+    static constexpr typename Q::Time min = 60 * s;
+    static constexpr typename Q::Time h = 3'600 * s;
+    static constexpr typename Q::Time d = 24 * 60 * 60 * s;
+    static constexpr typename Q::Time yr = 365.25 * 24 * 60 * 60 * s;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Time, 2>> s2 = s * s; // to ease writing of other units, like F = A2 * s4 / kg / m2
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Time, 3>> s3 = s * s * s;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Time, 4>> s4 = s * s * s * s;
 
 
-    static constexpr typename Engine::ElectricCurrent A = Engine::ElectricCurrent::fromNumericalValue(1.0 * detail::ampere_v<Engine>);
-    static constexpr typename Engine::ElectricCurrent mA = 1.0e-3  * A;
-    static constexpr typename Engine::ElectricCurrent uA = 1.0e-6  * A;
-    static constexpr typename Engine::ElectricCurrent nA = 1.0e-9  * A;
-    static constexpr typename Engine::ElectricCurrent pA = 1.0e-12 * A;
-    static constexpr typename Engine::ElectricCurrent fA = 1.0e-15 * A;
-    static constexpr typename Engine::ElectricCurrent kA = 1.0e+3  * A;
-    static constexpr typename Engine::ElectricCurrent MA = 1.0e+6  * A;
-    static constexpr typename Engine::ElectricCurrent GA = 1.0e+9  * A;
-    static constexpr typename Engine::ElectricCurrent TA = 1.0e+12 * A;
+    static constexpr typename Q::ElectricCurrent A = Q::ElectricCurrent::fromNumericalValue(1.0 * detail::ampere_v<Engine>);
+    static constexpr typename Q::ElectricCurrent mA = 1.0e-3  * A;
+    static constexpr typename Q::ElectricCurrent uA = 1.0e-6  * A;
+    static constexpr typename Q::ElectricCurrent nA = 1.0e-9  * A;
+    static constexpr typename Q::ElectricCurrent pA = 1.0e-12 * A;
+    static constexpr typename Q::ElectricCurrent fA = 1.0e-15 * A;
+    static constexpr typename Q::ElectricCurrent kA = 1.0e+3  * A;
+    static constexpr typename Q::ElectricCurrent MA = 1.0e+6  * A;
+    static constexpr typename Q::ElectricCurrent GA = 1.0e+9  * A;
+    static constexpr typename Q::ElectricCurrent TA = 1.0e+12 * A;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::ElectricCurrent, 2>> A2 = A * A; // to ease writing of other units, like F = A2 * s4 / kg / m2
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::ElectricCurrent, 3>> A3 = A * A * A;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::ElectricCurrent, 4>> A4 = A * A * A * A;
 
-    static constexpr typename Engine::Temperature K = Engine::Temperature::fromNumericalValue(1.0 * detail::kelvin_v<Engine>);
-    static constexpr typename Engine::Temperature mK = 1.0e-3  * K;
-    static constexpr typename Engine::Temperature uK = 1.0e-6  * K;
-    static constexpr typename Engine::Temperature nK = 1.0e-9  * K;
-    static constexpr typename Engine::Temperature pK = 1.0e-12 * K;
-    static constexpr typename Engine::Temperature fK = 1.0e-15 * K;
-    static constexpr typename Engine::Temperature kK = 1.0e+3  * K;
-    static constexpr typename Engine::Temperature MK = 1.0e+6  * K;
-    static constexpr typename Engine::Temperature GK = 1.0e+9  * K;
-    static constexpr typename Engine::Temperature TK = 1.0e+12 * K;
+    static constexpr typename Q::Temperature K = Q::Temperature::fromNumericalValue(1.0 * detail::kelvin_v<Engine>);
+    static constexpr typename Q::Temperature mK = 1.0e-3  * K;
+    static constexpr typename Q::Temperature uK = 1.0e-6  * K;
+    static constexpr typename Q::Temperature nK = 1.0e-9  * K;
+    static constexpr typename Q::Temperature pK = 1.0e-12 * K;
+    static constexpr typename Q::Temperature fK = 1.0e-15 * K;
+    static constexpr typename Q::Temperature kK = 1.0e+3  * K;
+    static constexpr typename Q::Temperature MK = 1.0e+6  * K;
+    static constexpr typename Q::Temperature GK = 1.0e+9  * K;
+    static constexpr typename Q::Temperature TK = 1.0e+12 * K;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Temperature, 2>> K2 = K * K; // to ease writing of other units, like F = A2 * s4 / kg / m2
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Temperature, 3>> K3 = K * K * K;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Temperature, 4>> K4 = K * K * K * K;
-//     static constexpr typename Engine::Temperature DegC = Engine::Temperature::fromNumericalValue(273.15 + 1.0);
-//     static constexpr typename Engine::Temperature DegF = Engine::Temperature::fromNumericalValue( (459.67 + 1.0) * (5/9) );
+//     static constexpr typename Q::Temperature DegC = Q::Temperature::fromNumericalValue(273.15 + 1.0);
+//     static constexpr typename Q::Temperature DegF = Q::Temperature::fromNumericalValue( (459.67 + 1.0) * (5/9) );
 
-    static constexpr typename Engine::AmountOfSubstance mol = Engine::AmountOfSubstance::fromNumericalValue(1.0 * detail::mol_v<Engine>);
+    static constexpr typename Q::AmountOfSubstance mol = Q::AmountOfSubstance::fromNumericalValue(1.0 * detail::mol_v<Engine>);
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::AmountOfSubstance, 2>> mol2 = mol * mol; // to ease writing of other units, like F = A2 * s4 / kg / m2
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::AmountOfSubstance, 3>> mol3 = mol * mol * mol;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::AmountOfSubstance, 4>> mol4 = mol * mol * mol * mol;
 
-    static constexpr typename Engine::Luminosity cd = Engine::Luminosity::fromNumericalValue(1.0 * detail::candela_v<Engine>);
+    static constexpr typename Q::Luminosity cd = Q::Luminosity::fromNumericalValue(1.0 * detail::candela_v<Engine>);
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Luminosity, 2>> cd2 = cd * cd; // to ease writing of other units, like F = A2 * s4 / kg / m2
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Luminosity, 3>> cd3 = cd * cd * cd;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Luminosity, 4>> cd4 = cd * cd * cd * cd;
 
-    static constexpr typename Engine::Area m2 = m * m;
-    static constexpr typename Engine::Area cm2 = 1.0e-4 * m2;
-    static constexpr typename Engine::Area mm2 = 1.0e-6 * m2;
-    static constexpr typename Engine::Area a = 100 * m2;
-    static constexpr typename Engine::Area daa = 1000 * m2;
-    static constexpr typename Engine::Area ha = 10'000 * m2;
-    static constexpr typename Engine::Area km2 = 1'000'000 * m2;
+    static constexpr typename Q::Area m2 = m * m;
+    static constexpr typename Q::Area cm2 = 1.0e-4 * m2;
+    static constexpr typename Q::Area mm2 = 1.0e-6 * m2;
+    static constexpr typename Q::Area a = 100 * m2;
+    static constexpr typename Q::Area daa = 1000 * m2;
+    static constexpr typename Q::Area ha = 10'000 * m2;
+    static constexpr typename Q::Area km2 = 1'000'000 * m2;
 
-    static constexpr typename Engine::Volume m3 = m * m * m;
-    static constexpr typename Engine::Volume ml = 1e-6 * m3;
-    static constexpr typename Engine::Volume cl = 1e-5 * m3;
-    static constexpr typename Engine::Volume l = 1e-3 * m3;
+    static constexpr typename Q::Volume m3 = m * m * m;
+    static constexpr typename Q::Volume ml = 1e-6 * m3;
+    static constexpr typename Q::Volume cl = 1e-5 * m3;
+    static constexpr typename Q::Volume l = 1e-3 * m3;
 
 
-    static constexpr typename Engine::Velocity kmh = 1.0 / 3.6 * m / s;
-    static constexpr typename Engine::Acceleration Gal = 0.01 * m / s2; // galileo
+    static constexpr typename Q::Velocity kmh = 1.0 / 3.6 * m / s;
+    static constexpr typename Q::Acceleration Gal = 0.01 * m / s2; // galileo
 
 
     static constexpr double rad = 1.0; // radian
@@ -161,16 +162,16 @@ struct SI_units_template {
 
 
 #define DEFINE_DERIVED_UNIT(Dimension, Unit, Definition) \
-    static constexpr typename Engine::Dimension Unit = Definition; \
-    static constexpr typename Engine::Dimension m##Unit = 1.0e-3  * Unit; \
-    static constexpr typename Engine::Dimension u##Unit = 1.0e-6  * Unit; \
-    static constexpr typename Engine::Dimension n##Unit = 1.0e-9  * Unit; \
-    static constexpr typename Engine::Dimension p##Unit = 1.0e-12 * Unit; \
-    static constexpr typename Engine::Dimension f##Unit = 1.0e-15 * Unit; \
-    static constexpr typename Engine::Dimension k##Unit = 1.0e+3  * Unit; \
-    static constexpr typename Engine::Dimension M##Unit = 1.0e+6  * Unit; \
-    static constexpr typename Engine::Dimension G##Unit = 1.0e+9  * Unit; \
-    static constexpr typename Engine::Dimension T##Unit = 1.0e+12 * Unit; \
+    static constexpr typename Q::Dimension Unit = Definition; \
+    static constexpr typename Q::Dimension m##Unit = 1.0e-3  * Unit; \
+    static constexpr typename Q::Dimension u##Unit = 1.0e-6  * Unit; \
+    static constexpr typename Q::Dimension n##Unit = 1.0e-9  * Unit; \
+    static constexpr typename Q::Dimension p##Unit = 1.0e-12 * Unit; \
+    static constexpr typename Q::Dimension f##Unit = 1.0e-15 * Unit; \
+    static constexpr typename Q::Dimension k##Unit = 1.0e+3  * Unit; \
+    static constexpr typename Q::Dimension M##Unit = 1.0e+6  * Unit; \
+    static constexpr typename Q::Dimension G##Unit = 1.0e+9  * Unit; \
+    static constexpr typename Q::Dimension T##Unit = 1.0e+12 * Unit; \
 
     DEFINE_DERIVED_UNIT(Capacitance, F, A2 * s4 / kg / m2) // Farad
     DEFINE_DERIVED_UNIT(ElectricCharge, C, A * s) // Coulomb
@@ -197,75 +198,75 @@ struct SI_units_template {
     DEFINE_DERIVED_UNIT(Dose, Gy, m2 / s2) // Gray
     DEFINE_DERIVED_UNIT(Pressure, Pa, kg / m / s2) // Pascal
 
-    static constexpr typename Engine::Pressure hPa = 1.0e+2  * Pa;
-    static constexpr typename Engine::Pressure bar = 1.0e+5   * Pa; // bar
-    static constexpr typename Engine::Pressure mbar = 1.0e+2  * Pa;
-    static constexpr typename Engine::Pressure ubar = 1.0e-1  * Pa;
-    static constexpr typename Engine::Pressure atm = 1'013.25 * hPa; // atmosphere
-    static constexpr typename Engine::Pressure Ba = 0.1 * Pa; // barye
+    static constexpr typename Q::Pressure hPa = 1.0e+2  * Pa;
+    static constexpr typename Q::Pressure bar = 1.0e+5   * Pa; // bar
+    static constexpr typename Q::Pressure mbar = 1.0e+2  * Pa;
+    static constexpr typename Q::Pressure ubar = 1.0e-1  * Pa;
+    static constexpr typename Q::Pressure atm = 1'013.25 * hPa; // atmosphere
+    static constexpr typename Q::Pressure Ba = 0.1 * Pa; // barye
 
 
 
     // Imperial units
 
     // Mass
-    static constexpr typename Engine::Mass gr = 64.798'91 * mg;
-    static constexpr typename Engine::Mass dr = 1.771'845'195'312'5 * g;
-    static constexpr typename Engine::Mass oz = 28.349'523'125 * g;
-    static constexpr typename Engine::Mass lb = 453.592'37 * g;
-    static constexpr typename Engine::Mass cwt = 45.359'237 * kg;
-    static constexpr typename Engine::Mass long_hundredweight = 50.802'345'44 * kg;
-    static constexpr typename Engine::Mass short_ton = 907.184'74 * kg;
-    static constexpr typename Engine::Mass long_ton = 1'016.046'908'8 * kg;
+    static constexpr typename Q::Mass gr = 64.798'91 * mg;
+    static constexpr typename Q::Mass dr = 1.771'845'195'312'5 * g;
+    static constexpr typename Q::Mass oz = 28.349'523'125 * g;
+    static constexpr typename Q::Mass lb = 453.592'37 * g;
+    static constexpr typename Q::Mass cwt = 45.359'237 * kg;
+    static constexpr typename Q::Mass long_hundredweight = 50.802'345'44 * kg;
+    static constexpr typename Q::Mass short_ton = 907.184'74 * kg;
+    static constexpr typename Q::Mass long_ton = 1'016.046'908'8 * kg;
 
     // Length
-    static constexpr typename Engine::Length p = 0.3527777777777778 * mm;
-    static constexpr typename Engine::Length pica = 4.233333333333333 * mm;
-    static constexpr typename Engine::Length in = 25.4 * mm;
-    static constexpr typename Engine::Length ft = 0.3048 * m;
-    static constexpr typename Engine::Length yd = 0.9144 * m;
-    static constexpr typename Engine::Length mi = 1'609.344 * m;
+    static constexpr typename Q::Length p = 0.3527777777777778 * mm;
+    static constexpr typename Q::Length pica = 4.233333333333333 * mm;
+    static constexpr typename Q::Length in = 25.4 * mm;
+    static constexpr typename Q::Length ft = 0.3048 * m;
+    static constexpr typename Q::Length yd = 0.9144 * m;
+    static constexpr typename Q::Length mi = 1'609.344 * m;
 
 
     // Area
-    static constexpr typename Engine::Area ft2 = 0.092'903'41 * m2;
-    static constexpr typename Engine::Area ch2 = 404.6873 * m2;
-    static constexpr typename Engine::Area acre = 4'046.873 * m2;
-    static constexpr typename Engine::Area section = 2.589'998 * km2;
-    static constexpr typename Engine::Area twp = 93.239'93 * km2;
+    static constexpr typename Q::Area ft2 = 0.092'903'41 * m2;
+    static constexpr typename Q::Area ch2 = 404.6873 * m2;
+    static constexpr typename Q::Area acre = 4'046.873 * m2;
+    static constexpr typename Q::Area section = 2.589'998 * km2;
+    static constexpr typename Q::Area twp = 93.239'93 * km2;
 
     // Volume - US customary units
-    static constexpr typename Engine::Volume minim = 61.611'519'921'875e-6 * l;
-    static constexpr typename Engine::Volume fldr = 3.696'691'195'312'5 * ml;
-    static constexpr typename Engine::Volume tsp = 4.928'921'593'75 * ml;
-    static constexpr typename Engine::Volume Tbsp = 14.786'764'781'25 * ml;
-    static constexpr typename Engine::Volume floz = 29.573'529'562'5 * ml;
-    static constexpr typename Engine::Volume jig = 44.360'294'343'75 * ml;
-    static constexpr typename Engine::Volume gi = 118.294'118'25 * ml;
-    static constexpr typename Engine::Volume cp = 236.588'236'5 * ml;
-    static constexpr typename Engine::Volume liquid_pint = 473.176'473 * ml;
-    static constexpr typename Engine::Volume liquid_quart = 0.946'352'946 * l;
-    static constexpr typename Engine::Volume liquid_gallon = 3.785'411'784 * l;
-    static constexpr typename Engine::Volume liquid_barrel = 119.240'471'196 * l;
-    static constexpr typename Engine::Volume oil_barrel = 158.987'294'928 * l;
-    static constexpr typename Engine::Volume hogshead = 238.480'942'392 * l;
+    static constexpr typename Q::Volume minim = 61.611'519'921'875e-6 * l;
+    static constexpr typename Q::Volume fldr = 3.696'691'195'312'5 * ml;
+    static constexpr typename Q::Volume tsp = 4.928'921'593'75 * ml;
+    static constexpr typename Q::Volume Tbsp = 14.786'764'781'25 * ml;
+    static constexpr typename Q::Volume floz = 29.573'529'562'5 * ml;
+    static constexpr typename Q::Volume jig = 44.360'294'343'75 * ml;
+    static constexpr typename Q::Volume gi = 118.294'118'25 * ml;
+    static constexpr typename Q::Volume cp = 236.588'236'5 * ml;
+    static constexpr typename Q::Volume liquid_pint = 473.176'473 * ml;
+    static constexpr typename Q::Volume liquid_quart = 0.946'352'946 * l;
+    static constexpr typename Q::Volume liquid_gallon = 3.785'411'784 * l;
+    static constexpr typename Q::Volume liquid_barrel = 119.240'471'196 * l;
+    static constexpr typename Q::Volume oil_barrel = 158.987'294'928 * l;
+    static constexpr typename Q::Volume hogshead = 238.480'942'392 * l;
 
-    static constexpr typename Engine::Volume dry_pint = 550.610'471'357'5 * ml;
-    static constexpr typename Engine::Volume dry_quart = 1.101'220'942'715 * l;
-    static constexpr typename Engine::Volume dry_gallon = 4.404'883'770'86 * l;
-    static constexpr typename Engine::Volume pk = 8.809'767'541'72 * l;
-    static constexpr typename Engine::Volume bu = 35.239'070'166'88 * l;
-    static constexpr typename Engine::Volume dry_barrel = 115.627'123'584 * l;
+    static constexpr typename Q::Volume dry_pint = 550.610'471'357'5 * ml;
+    static constexpr typename Q::Volume dry_quart = 1.101'220'942'715 * l;
+    static constexpr typename Q::Volume dry_gallon = 4.404'883'770'86 * l;
+    static constexpr typename Q::Volume pk = 8.809'767'541'72 * l;
+    static constexpr typename Q::Volume bu = 35.239'070'166'88 * l;
+    static constexpr typename Q::Volume dry_barrel = 115.627'123'584 * l;
 
 
 
 
 
     // nautical
-    static constexpr typename Engine::Length ftm = 1.8288 * m;
-    static constexpr typename Engine::Length cb = 219.456 * m;
-    static constexpr typename Engine::Length nmi = 1'852.0 * m;
-    static constexpr typename Engine::Velocity kn = 1'852.0 * kmh;
+    static constexpr typename Q::Length ftm = 1.8288 * m;
+    static constexpr typename Q::Length cb = 219.456 * m;
+    static constexpr typename Q::Length nmi = 1'852.0 * m;
+    static constexpr typename Q::Velocity kn = 1'852.0 * kmh;
 
 };
 
@@ -456,16 +457,20 @@ struct SiDimensions
 
 };
 
-struct SI : public SiDimensions<SI>
+struct SiEngine
 {
+    using NumberType = double;
+    using SystemOfDimensions = SiDimensions<SiEngine>;
     using referenceEngine = void;
 
     template<typename T> static constexpr auto unitString = detail::unitString<T>;
     template<typename T> static constexpr double baseUnit = 1.0;
 
-    using units = SI_units_template<SI>;
-    using constants = SI_constants_template<SI>;
+    using units = SI_units_template<SiEngine>;
+    using constants = SI_constants_template<SiEngine>;
 };
+
+using SI = SystemOfQuantities<SiEngine>;
 
 
 namespace SI_literals {

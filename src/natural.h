@@ -101,7 +101,8 @@ struct MassDimensions
 
 template<typename Engine>
 struct NaturalUnits_units_template {
-    static constexpr typename Engine::Mass eV = Engine::Mass::fromNumericalValue(1.0);
+    using Q = typename Engine::SystemOfDimensions;
+    static constexpr typename Q::Mass eV = Q::Mass::fromNumericalValue(1.0);
 };
 
 template<typename Engine>
@@ -114,9 +115,11 @@ struct NaturalUnits_constants_template {
 //     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Length, 3>, DimensionComponent<base_dimensions::Mass, -1>, DimensionComponent<base_dimensions::Time, -2>> G = 6.67408e-11 * (units::m3 / units::kg / units::s / units::s);
 };
 
-struct NaturalUnits : public MassDimensions<NaturalUnits>
+struct NaturalEngine
 {
-    using referenceEngine = SI; // TODO: Remove
+    using NumberType = double;
+    using SystemOfDimensions = MassDimensions<NaturalEngine>;
+    using referenceEngine = SiEngine; // TODO: Remove
     template<typename T> static constexpr double baseUnit = 1.0;
     template<typename T> static constexpr auto unitString = "";
 
@@ -134,13 +137,13 @@ struct NaturalUnits : public MassDimensions<NaturalUnits>
      * \p inputValue.
      */
     template<typename TargetQuantity, int massDimension>
-    static constexpr auto toSiDimensions(Quantity<NaturalUnits, DimensionComponent<base_dimensions::Mass, massDimension>> inputValue)
+    static constexpr auto toSiDimensions(Quantity<NaturalEngine, DimensionComponent<base_dimensions::Mass, massDimension>> inputValue)
     -> TargetQuantity
     {
-        static_assert(natural::detail::canConvertToSIDimensions_v<Quantity<NaturalUnits, DimensionComponent<base_dimensions::Mass, massDimension>>, TargetQuantity>,
+        static_assert(natural::detail::canConvertToSIDimensions_v<Quantity<NaturalEngine, DimensionComponent<base_dimensions::Mass, massDimension>>, TargetQuantity>,
                       "Can't convert to SI: Mass dimension of source and SI dimension of target do not match.");
 
-        using IntermediateSIQuantity = detail::changeEngine_t<SI, TargetQuantity>;
+        using IntermediateSIQuantity = detail::changeEngine_t<SiEngine, TargetQuantity>;
         IntermediateSIQuantity tmp = IntermediateSIQuantity::fromNumericalValue( inputValue.numericalValue() * natural::detail::toSI_conversionFactor_v<IntermediateSIQuantity> );
 
         return static_cast<TargetQuantity>(tmp); // Does the implicit conversion from SI units into the actual target system of units
@@ -156,20 +159,22 @@ struct NaturalUnits : public MassDimensions<NaturalUnits>
      */
     template<typename SourceEngine, typename ...DimensionPack>
     static constexpr auto fromSiDimensions(Quantity<SourceEngine, DimensionPack...> inputValue)
-    -> natural::detail::MassDimension_t<Quantity<NaturalUnits, DimensionPack...>>
+    -> natural::detail::MassDimension_t<Quantity<NaturalEngine, DimensionPack...>>
     {
-        Quantity<SI, DimensionPack...> tmp = inputValue;
+        Quantity<SiEngine, DimensionPack...> tmp = inputValue;
 
-        return natural::detail::MassDimension_t<Quantity<NaturalUnits, DimensionPack...>>::fromNumericalValue(
+        return natural::detail::MassDimension_t<Quantity<NaturalEngine, DimensionPack...>>::fromNumericalValue(
             tmp.numericalValue() / natural::detail::toSI_conversionFactor_v<Quantity<SourceEngine, DimensionPack...>>
         );
     }
 
-    using units = NaturalUnits_units_template<NaturalUnits>;
-    using constants = NaturalUnits_constants_template<NaturalUnits>;
+    using units = NaturalUnits_units_template<NaturalEngine>;
+    using constants = NaturalUnits_constants_template<NaturalEngine>;
 };
-template<> constexpr SI::Mass NaturalUnits::baseUnit<typename base_dimensions::Mass> = 1.782662e-36 * SI::units::kg;
-template<> constexpr auto NaturalUnits::unitString<typename base_dimensions::Mass> = "eV";
+template<> constexpr SI::Mass NaturalEngine::baseUnit<typename base_dimensions::Mass> = 1.782662e-36 * SI::units::kg;
+template<> constexpr auto NaturalEngine::unitString<typename base_dimensions::Mass> = "eV";
+
+using NaturalUnits = SystemOfQuantities<NaturalEngine>;
 
 } // namespace Quantityland2
 

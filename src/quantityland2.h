@@ -538,4 +538,9 @@ std::ostream& operator<<(std::ostream& os, const Quantity<Engine, DimensionCompo
     return os;
 }
 
+template<typename Engine>
+struct SystemOfQuantities : public Engine, public Engine::SystemOfDimensions
+{
+};
+
 }

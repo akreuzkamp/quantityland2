@@ -301,7 +301,7 @@ static_assert(canAssign_v<NaturalUnits::Length, NaturalUnits::Time>);
 static_assert(!canAssign_v<NaturalUnits::Mass, NaturalUnits::Time>);
 static_assert(nu_l.numericalValue() == nu_t.numericalValue());
 
-constexpr Quantity<SI, DimensionComponent<Mass, -1>> tmp = nu_l;
+constexpr Quantity<SiEngine, DimensionComponent<Mass, -1>> tmp = nu_l;
 static_assert(tmp.numericalValue() != nu_l.numericalValue());
 constexpr auto si_l_man = tmp * SI::constants::h_bar / SI::constants::c_0;
 constexpr auto si_l_auto = NaturalUnits::toSiDimensions<SI::Length>(nu_l);
@@ -387,7 +387,7 @@ int main() {
 // Test own Engine
 struct TestEngine : public SiDimensions<TestEngine>
 {
-    using referenceEngine = SI;
+    using referenceEngine = SiEngine;
     template<typename T> static constexpr auto baseUnit = 1.0;
 };
 template<> constexpr SI::Length TestEngine::baseUnit<typename base_dimensions::Length> = 149'597'870.7_km;
