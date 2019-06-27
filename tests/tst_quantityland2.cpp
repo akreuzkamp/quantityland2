@@ -25,10 +25,11 @@
 
 #include <cmath>
 #include <cassert>
+#include <complex>
 
 constexpr double pi = M_PI;
 
-
+using namespace std::complex_literals;
 using namespace Quantityland2;
 using namespace Quantityland2::base_dimensions;
 using namespace Quantityland2::SI_literals;
@@ -491,3 +492,51 @@ static_assert(verifyDimensionOrder_v<SI::Wavevector                    >);
 static_assert(verifyDimensionOrder_v<SI::Weight                        >);
 static_assert(verifyDimensionOrder_v<SI::Work                          >);
 static_assert(verifyDimensionOrder_v<SI::YoungsModulus                 >);
+
+// Test float number support
+
+struct FloatSiEngine
+{
+    using NumberType = float;
+    using SystemOfDimensions = SiDimensions<FloatSiEngine>;
+
+    template<typename T> static constexpr double baseUnit = 1.0;
+
+    using units = SI_units_template<FloatSiEngine>;
+    using constants = SI_constants_template<FloatSiEngine>;
+};
+using FloatSI = SystemOfQuantities<FloatSiEngine>;
+
+FloatSI::Length floatLength = 1.4f * FloatSI::units::m;
+static_assert(std::is_same_v<numberTypeOf_t<SI>, double>);
+static_assert(std::is_same_v<numberTypeOf_t<FloatSiEngine>, float>);
+
+// Test complex number support
+
+
+struct ComplexSiEngine
+{
+    using NumberType = std::complex<double>;
+    using SystemOfDimensions = SiDimensions<ComplexSiEngine>;
+
+    template<typename T> static constexpr double baseUnit = 1.0;
+
+    using units = SI_units_template<ComplexSiEngine>;
+    using constants = SI_constants_template<ComplexSiEngine>;
+};
+using ComplexSI = SystemOfQuantities<ComplexSiEngine>;
+
+static_assert(std::is_same_v<numberTypeOf_t<ComplexSI>, std::complex<double>>);
+
+ComplexSI::Length complexDistance = (1.4 + 9.6i) * ComplexSI::units::m;
+ComplexSI::Time complexDuration = (2.8 + 9.6i) * ComplexSI::units::s;
+auto complexVelocity = complexDistance / complexDuration;
+
+
+class MySimulation : private SI::units
+{
+    void foo() {
+        auto x = 1 * m / s2;
+        std::cout << x;
+    }
+};

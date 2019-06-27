@@ -92,7 +92,7 @@ struct MassDimensions
 
     using Area = Quantity<Engn, DimensionComponent<base_dimensions::Mass, -2>>;
     using Volume = Quantity<Engn, DimensionComponent<base_dimensions::Mass, -3>>;
-    using Velocity = double;
+    using Velocity = typename Engn::NumberType;
     using Momentum = Quantity<Engn, DimensionComponent<base_dimensions::Mass, 1>>;
     using Acceleration = Quantity<Engn, DimensionComponent<base_dimensions::Mass, 1>>;
     using Force = Quantity<Engn, DimensionComponent<base_dimensions::Mass, 2>>;

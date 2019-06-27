@@ -83,11 +83,22 @@ struct DimensionComponent
     static constexpr int exponent = Exponent;
 };
 
+template<typename T, typename Enable=void> struct numberTypeOf
+{
+    using type = double;
+};
+template<typename T> struct numberTypeOf<T, std::void_t<typename T::NumberType>>
+{
+    using type = typename T::NumberType;
+};
+
+template<typename T> using numberTypeOf_t = typename numberTypeOf<T>::type;
+
 template<typename Engine_, typename ...DimensionComponents>
     struct Quantity // I want Meta-classes
 {
     using Engine = Engine_;
-    using Scalar = double;
+    using Scalar = numberTypeOf_t<Engine_>;
 
     template<typename OtherEngine>
     constexpr Quantity(const Quantity<OtherEngine, DimensionComponents...> &other);
@@ -164,7 +175,7 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
     auto prepend(Head, Quantity<Engine, Tail...>) -> Quantity<Engine, Head, Tail...>;
 
     template<typename Engine, typename Head>
-    auto prepend(Head, double) -> Quantity<Engine, Head>;
+    auto prepend(Head, numberTypeOf_t<Engine>) -> Quantity<Engine, Head>;
 
     template<typename Engine, typename Head, typename Quantity>
     using prepend_t = decltype(prepend<Engine>(std::declval<Head>(), std::declval<Quantity>()));
@@ -185,7 +196,7 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
     // Merge empty (i.e. dimensionless) quantities
     template<Op op, typename Engine1, typename Engine2>
     auto mergeStep(const Quantity<Engine1> &, const Quantity<Engine2> &)
-        -> double;
+        -> numberTypeOf_t<Engine1>;
 
     // Merge with empty right-hand-side
     template<Op op, typename Engine1, typename Engine2, typename DimensionPack1Head, typename ...DimensionPack1Tail>
@@ -297,7 +308,7 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
     template<typename T, std::enable_if_t<std::is_arithmetic_v<T>>* = nullptr>
         constexpr T toNumericalValue(const T value) { return value; }
     template<typename Engine, typename ...DimensionPack>
-        constexpr double toNumericalValue(const Quantity<Engine, DimensionPack...> &value) { return value.numericalValue(); }
+        constexpr numberTypeOf_t<Engine> toNumericalValue(const Quantity<Engine, DimensionPack...> &value) { return value.numericalValue(); }
     template<typename T, std::enable_if_t<std::is_arithmetic_v<T>>* = nullptr>
         constexpr T fromNumericalValue(const T value) { return value; }
     template<typename T, std::enable_if_t<isQuantity_v<T>>* = nullptr>
@@ -307,13 +318,13 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
 
     template<typename ToEngine, typename FromEngine, typename ...DimensionPack>
     constexpr auto convert(Quantity<FromEngine, DimensionPack...> v)
-        -> std::enable_if_t<std::is_same_v<typename FromEngine::referenceEngine, ToEngine>, double>
+        -> std::enable_if_t<std::is_same_v<typename FromEngine::referenceEngine, ToEngine>, numberTypeOf_t<FromEngine>>
     {
         return v.numericalValue() * detail::referenceConversionFactor(v);
     }
     template<typename ToEngine, typename FromEngine, typename ...DimensionPack>
     constexpr auto convert(Quantity<FromEngine, DimensionPack...> v)
-        -> std::enable_if_t<std::is_same_v<typename ToEngine::referenceEngine, FromEngine>, double>
+        -> std::enable_if_t<std::is_same_v<typename ToEngine::referenceEngine, FromEngine>, numberTypeOf_t<FromEngine>>
     {
         constexpr auto ownConvFactor = detail::referenceConversionFactor(Quantity<ToEngine, DimensionPack...>::fromNumericalValue(0.0)); // the numericalValue of zero is arbitrary and won't be used
         return 1.0 / ownConvFactor * v.numericalValue();
@@ -322,14 +333,14 @@ inline namespace detail { //FIXME: why can't I just put this in a non-inline nam
     constexpr auto convert(Quantity<FromEngine, DimensionPack...> v)
         -> std::enable_if_t<std::is_same_v<typename ToEngine::referenceEngine, typename FromEngine::referenceEngine>
                         && !std::is_same_v<typename ToEngine::referenceEngine, void>
-                        && !std::is_same_v<FromEngine, ToEngine>, double>
+                        && !std::is_same_v<FromEngine, ToEngine>, numberTypeOf_t<FromEngine>>
     {
         constexpr auto ownConvFactor = detail::referenceConversionFactor(v);
         constexpr auto otherConvFactor = detail::referenceConversionFactor(Quantity<ToEngine, DimensionPack...>::fromNumericalValue(0.0)); // the numericalValue of zero is arbitrary and won't be used
         return ownConvFactor / otherConvFactor * v.numericalValue();
     }
     template<typename ToEngine, typename ...DimensionPack>
-    constexpr double convert(Quantity<ToEngine, DimensionPack...> v)
+    constexpr numberTypeOf_t<ToEngine> convert(Quantity<ToEngine, DimensionPack...> v)
     {
         return v.numericalValue();
     }
@@ -469,7 +480,7 @@ constexpr auto operator/(const Quantity<Engine1, DimensionPack1...> &lhs, const 
 
 template<typename Scalar, typename Engine, typename ...DimensionPack>
 constexpr auto operator*(const Quantity<Engine, DimensionPack...> &lhs, Scalar rhs)
-    -> std::enable_if_t<std::is_convertible_v<decltype(lhs.numericalValue(), rhs), double>, Quantity<Engine, DimensionPack...>>
+    -> std::enable_if_t<std::is_convertible_v<decltype(lhs.numericalValue() * rhs), numberTypeOf_t<Engine>>, Quantity<Engine, DimensionPack...>>
 {
     static_assert(verifyDimensionOrder_v<Quantity<Engine, DimensionPack...>>,
                   "The left hand operand doesn't obey the required order of base dimensions, e.g. Mass MUST be listed before Length.");
@@ -479,7 +490,7 @@ constexpr auto operator*(const Quantity<Engine, DimensionPack...> &lhs, Scalar r
 
 template<typename Scalar, typename Engine, typename ...DimensionPack>
 constexpr auto operator*(Scalar lhs, const Quantity<Engine, DimensionPack...> &rhs)
-    -> std::enable_if_t<std::is_convertible_v<decltype(lhs * rhs.numericalValue()), double>, Quantity<Engine, DimensionPack...>>
+    -> std::enable_if_t<std::is_convertible_v<decltype(lhs * rhs.numericalValue()), numberTypeOf_t<Engine>>, Quantity<Engine, DimensionPack...>>
 {
     static_assert(verifyDimensionOrder_v<Quantity<Engine, DimensionPack...>>,
                   "The right hand operand doesn't obey the required order of base dimensions, e.g. Mass MUST be listed before Length.");
@@ -489,7 +500,7 @@ constexpr auto operator*(Scalar lhs, const Quantity<Engine, DimensionPack...> &r
 
 template<typename Scalar, typename Engine, typename ...DimensionPack>
 constexpr auto operator/(const Quantity<Engine, DimensionPack...> &lhs, Scalar rhs)
-    -> std::enable_if_t<std::is_convertible_v<decltype(lhs.numericalValue() / rhs), double>, Quantity<Engine, DimensionPack...>>
+    -> std::enable_if_t<std::is_convertible_v<decltype(lhs.numericalValue() / rhs), numberTypeOf_t<Engine>>, Quantity<Engine, DimensionPack...>>
 {
     static_assert(verifyDimensionOrder_v<Quantity<Engine, DimensionPack...>>,
                   "The left hand operand doesn't obey the required order of base dimensions, e.g. Mass MUST be listed before Length.");
@@ -499,7 +510,7 @@ constexpr auto operator/(const Quantity<Engine, DimensionPack...> &lhs, Scalar r
 
 template<typename Scalar, typename Engine, typename ...DimensionPack>
 constexpr auto operator/(Scalar lhs, const Quantity<Engine, DimensionPack...> &rhs)
-    -> std::enable_if_t<std::is_convertible_v<decltype(lhs / rhs.numericalValue()), double>, detail::invert_t<Quantity<Engine, DimensionPack...>>>
+    -> std::enable_if_t<std::is_convertible_v<decltype(lhs / rhs.numericalValue()), numberTypeOf_t<Engine>>, detail::invert_t<Quantity<Engine, DimensionPack...>>>
 {
     static_assert(verifyDimensionOrder_v<Quantity<Engine, DimensionPack...>>,
                   "The right hand operand doesn't obey the required order of base dimensions, e.g. Mass MUST be listed before Length.");

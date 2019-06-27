@@ -13,10 +13,10 @@ the box.
 * Automatic unit conversion for compatible systems of units
 * Support for natural units
 * Fully customizable: Create your own system of units or even your own base dimensions
+* Supports arbitrary arithmetic types as basis for quantity types (e.g. complex numbers)
 
 Missing so far:
 * fractional exponents
-* support for arithmetic types other than double
 * non proportionate units (e.g. °C or dB)
 
 ## Installation
