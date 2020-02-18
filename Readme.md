@@ -150,14 +150,15 @@ all!
 ```
 using namespace Quantityland2;
 
-struct C60Quantities : public SiDimensions<C60Quantities>
+struct C60Engine
 {
+    using NumberType = double;
+    using SystemOfDimensions = SiDimensions<CGSEngine>;
     using referenceEngine = SI; // allow conversion from/to SI and other SI-derived engines
 
     template<typename T> static constexpr auto baseUnit = 1.0; // this is only there to be specialized
-
-    using units = SI_units_template<Engine<C60Config>>; // inherit basic unit constants (like m, kg, s) from SI
-    using constants = SI_constants_template<Engine<C60Config>>;  // some common constants, readily represented in C60-units :)
+    using units = SI_units_template<C60Engine>; // inherit basic unit constants (like m, kg, s) from SI
+    using constants = SI_constants_template<C60Engine>;  // some common constants, readily represented in C60-units :)
 };
 // base units in SI units, allows automatic unit conversion (ISO C++ requires specializations of member templates to happen outside the class)
 template<> constexpr SI::Length          C60Quantities::baseUnit<typename base_dimensions::Length> = 0.14e-9 * SI::units::m; // average bond length in a C60-fullerene
@@ -165,9 +166,14 @@ template<> constexpr SI::Mass            C60Quantities::baseUnit<typename base_d
 template<> constexpr SI::Time            C60Quantities::baseUnit<typename base_dimensions::Time> = 1.0 * SI::units::s;
 template<> constexpr SI::ElectricCurrent C60Quantities::baseUnit<typename base_dimensions::ElectricCurrent> = 1.0 * SI::units::A;
 
+using C60Quantities = SystemOfQuantities<C60Engine>;
+
 int main()
 {
-    C60Quantities::Mass m1 = 1 * C60Quantities::units::kg; // or just use SI_literals and write 1_kg, thanks to automatic unit conversion, that's the same.
+    C60Quantities::Mass m1 = 1 * C60Quantities::units::kg; // or just use SI_literals and write 1_kg, thanks to
+                                                           // automatic constexpr unit conversion, it's the same.
+    double fullerenesPerKilo = m1 / C60Quantities::constants::m0; // m0 always corresponds to the constant used to define
+                                                                  // the unit of mass, ie. 1.1967e-24_kg in this case.
     std::cout << m1 << std::endl;
 }
 ```
