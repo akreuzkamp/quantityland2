@@ -273,6 +273,16 @@ struct SI_units_template {
 template<typename Engine>
 struct SI_constants_template {
     using units = SI_units_template<Engine>;
+    using Q = typename Engine::SystemOfDimensions;
+
+    // basic constants used for the numerics (ie. m0 == 1kg in SI, m0 == 1g in CGS and m0 == 1eV in natural units)
+    static constexpr auto m0 = Q::Mass::fromNumericalValue(1.0);
+    static constexpr auto s0 = Q::Length::fromNumericalValue(1.0);
+    static constexpr auto t0 = Q::Time::fromNumericalValue(1.0);
+    static constexpr auto I0 = Q::ElectricCurrent::fromNumericalValue(1.0);
+    static constexpr auto T0 = Q::Temperature::fromNumericalValue(1.0);
+    static constexpr auto n0 = Q::AmountOfSubstance::fromNumericalValue(1.0);
+    static constexpr auto Iv0 = Q::LuminousFlux::fromNumericalValue(1.0);
 
     // Universal constants
     static constexpr auto Z_0  = 376.730313667 * units::Ohm; // characteristic impedance of vacuum
