@@ -32,7 +32,7 @@ namespace detail {
     template<> constexpr auto unitString<typename base_dimensions::ElectricCurrent> = "A";
     template<> constexpr auto unitString<typename base_dimensions::Temperature> = "K";
     template<> constexpr auto unitString<typename base_dimensions::AmountOfSubstance> = "mol";
-    template<> constexpr auto unitString<typename base_dimensions::Luminosity> = "cd";
+    template<> constexpr auto unitString<typename base_dimensions::LuminousIntensity> = "cd";
 
     template<typename Engine>
     constexpr double meter_v = 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::Length>);
@@ -47,7 +47,7 @@ namespace detail {
     template<typename Engine>
     constexpr double mol_v = 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::AmountOfSubstance>);
     template<typename Engine>
-    constexpr double candela_v= 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::Luminosity>);
+    constexpr double candela_v= 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::LuminousIntensity>);
 }
 
 template<typename Engine>
@@ -133,10 +133,10 @@ struct SI_units_template {
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::AmountOfSubstance, 3>> mol3 = mol * mol * mol;
     static constexpr Quantity<Engine, DimensionComponent<base_dimensions::AmountOfSubstance, 4>> mol4 = mol * mol * mol * mol;
 
-    static constexpr typename Q::Luminosity cd = Q::Luminosity::fromNumericalValue(1.0 * detail::candela_v<Engine>);
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Luminosity, 2>> cd2 = cd * cd; // to ease writing of other units, like F = A2 * s4 / kg / m2
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Luminosity, 3>> cd3 = cd * cd * cd;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Luminosity, 4>> cd4 = cd * cd * cd * cd;
+    static constexpr typename Q::LuminousIntensity cd = Q::LuminousIntensity::fromNumericalValue(1.0 * detail::candela_v<Engine>);
+    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::LuminousIntensity, 2>> cd2 = cd * cd; // to ease writing of other units, like F = A2 * s4 / kg / m2
+    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::LuminousIntensity, 3>> cd3 = cd * cd * cd;
+    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::LuminousIntensity, 4>> cd4 = cd * cd * cd * cd;
 
     static constexpr typename Q::Area m2 = m * m;
     static constexpr typename Q::Area cm2 = 1.0e-4 * m2;
@@ -364,7 +364,7 @@ struct SiDimensions
     using ElectricCurrent = Quantity<Engn, Dim<base_dimensions::ElectricCurrent, 1>>;
     using Temperature = Quantity<Engn, Dim<base_dimensions::Temperature, 1>>;
     using AmountOfSubstance = Quantity<Engn, Dim<base_dimensions::AmountOfSubstance, 1>>;
-    using Luminosity = Quantity<Engn, Dim<base_dimensions::Luminosity, 1>>;
+    using LuminousIntensity = Quantity<Engn, Dim<base_dimensions::LuminousIntensity, 1>>;
 
     using Absement  = Quantity<Engn, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, 1>>;
     using AbsorbedDoseRate  = Quantity<Engn, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -3>>;
@@ -401,7 +401,7 @@ struct SiDimensions
     using Heat  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>>;
     using HeatCapacity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::Temperature, -1>>;
     using HeatFluxDensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Time, -3>>;
-    using Illuminance  = Quantity<Engn, Dim<base_dimensions::Length, -2>, Dim<base_dimensions::Luminosity, 1>>;
+    using Illuminance  = Quantity<Engn, Dim<base_dimensions::Length, -2>, Dim<base_dimensions::LuminousIntensity, 1>>;
     using Impedance  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -3>, Dim<base_dimensions::ElectricCurrent, -2>>;
     using Impulse  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -1>>;
     using Inductance  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::ElectricCurrent, -2>>;
@@ -411,7 +411,7 @@ struct SiDimensions
     using Jounce   = Quantity<Engn, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -4>>;
     using KinematicViscosity  = Quantity<Engn, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -1>>;
     using LinearDensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, -1>>;
-    using LuminousFlux   = Quantity<Engn, Dim<base_dimensions::Luminosity, 1>>;
+    using LuminousFlux   = Quantity<Engn, Dim<base_dimensions::LuminousIntensity, 1>>;
     using MagneticFieldStrength  = Quantity<Engn, Dim<base_dimensions::Length, -1>, Dim<base_dimensions::ElectricCurrent, 1>>;
     using MagneticFlux  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::ElectricCurrent, -1>>;
     using MagneticFluxDensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::ElectricCurrent, -1>>;
@@ -554,8 +554,8 @@ namespace SI_literals {
     constexpr SI::AmountOfSubstance operator"" _mol(long double value)        { return SI::AmountOfSubstance::fromNumericalValue(value); }
     constexpr SI::AmountOfSubstance operator"" _mol(unsigned long long value) { return SI::AmountOfSubstance::fromNumericalValue(static_cast<long double>(value)); }
 
-    constexpr SI::Luminosity operator"" _cd(long double value)        { return SI::Luminosity::fromNumericalValue(value); }
-    constexpr SI::Luminosity operator"" _cd(unsigned long long value) { return SI::Luminosity::fromNumericalValue(static_cast<long double>(value)); }
+    constexpr SI::LuminousIntensity operator"" _cd(long double value)        { return SI::LuminousIntensity::fromNumericalValue(value); }
+    constexpr SI::LuminousIntensity operator"" _cd(unsigned long long value) { return SI::LuminousIntensity::fromNumericalValue(static_cast<long double>(value)); }
 
     constexpr SI::Area operator"" _m2(long double value)   { return SI::Area::fromNumericalValue(value); }
     constexpr SI::Area operator"" _m2(unsigned long long value)   { return SI::Area::fromNumericalValue(value); }

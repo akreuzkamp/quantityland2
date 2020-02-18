@@ -60,7 +60,7 @@ struct AmountOfSubstance
     static constexpr uint64_t baseDimensionId = 6;
 };
 
-struct Luminosity
+struct LuminousIntensity
 {
     static constexpr uint64_t baseDimensionId = 7;
 };
