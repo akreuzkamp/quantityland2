@@ -21,33 +21,26 @@
 #pragma once
 
 #include "quantityland2.h"
+#include <array>
+
 
 namespace Quantityland2 {
 
 namespace detail {
-    template<typename T> constexpr auto unitString = "";
-    template<> constexpr auto unitString<typename base_dimensions::Length> = "m";
-    template<> constexpr auto unitString<typename base_dimensions::Mass> = "kg";
-    template<> constexpr auto unitString<typename base_dimensions::Time> = "s";
-    template<> constexpr auto unitString<typename base_dimensions::ElectricCurrent> = "A";
-    template<> constexpr auto unitString<typename base_dimensions::Temperature> = "K";
-    template<> constexpr auto unitString<typename base_dimensions::AmountOfSubstance> = "mol";
-    template<> constexpr auto unitString<typename base_dimensions::LuminousIntensity> = "cd";
-
     template<typename Engine>
-    constexpr double meter_v = 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::Length>);
+    constexpr double kilogram_v = 1.0 / toNumericalValue(std::get<0>(Engine::baseUnits));
     template<typename Engine>
-    constexpr double kilogram_v = 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::Mass>);
+    constexpr double meter_v = 1.0 / toNumericalValue(std::get<1>(Engine::baseUnits));
     template<typename Engine>
-    constexpr double second_v = 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::Time>);
+    constexpr double second_v = 1.0 / toNumericalValue(std::get<2>(Engine::baseUnits));
     template<typename Engine>
-    constexpr double ampere_v = 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::ElectricCurrent>);
+    constexpr double ampere_v = 1.0 / toNumericalValue(std::get<3>(Engine::baseUnits));
     template<typename Engine>
-    constexpr double kelvin_v = 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::Temperature>);
+    constexpr double kelvin_v = 1.0 / toNumericalValue(std::get<4>(Engine::baseUnits));
     template<typename Engine>
-    constexpr double mol_v = 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::AmountOfSubstance>);
+    constexpr double mol_v = 1.0 / toNumericalValue(std::get<5>(Engine::baseUnits));
     template<typename Engine>
-    constexpr double candela_v= 1.0 / toNumericalValue(Engine::template baseUnit<typename base_dimensions::LuminousIntensity>);
+    constexpr double candela_v= 1.0 / toNumericalValue(std::get<6>(Engine::baseUnits));
 }
 
 template<typename Engine>
@@ -67,9 +60,9 @@ struct SI_units_template {
     static constexpr typename Q::Mass Da = u;
 
 
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Mass, 2>> kg2 = kg * kg; // to ease writing of other units, like F = A2 * s4 / kg / m2
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Mass, 3>> kg3 = kg * kg * kg;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Mass, 4>> kg4 = kg * kg * kg * kg;
+    static constexpr Quantity<Engine, 2, 0, 0, 0, 0, 0, 0> kg2 = kg * kg; // to ease writing of other units, like F = A2 * s4 / kg / m2
+    static constexpr Quantity<Engine, 3, 0, 0, 0, 0, 0, 0> kg3 = kg * kg * kg;
+    static constexpr Quantity<Engine, 4, 0, 0, 0, 0, 0, 0> kg4 = kg * kg * kg * kg;
 
     static constexpr typename Q::Length m = Q::Length::fromNumericalValue(1.0 * detail::meter_v<Engine>);
     static constexpr typename Q::Length cm = 1.0e-2  * m;
@@ -80,7 +73,7 @@ struct SI_units_template {
     static constexpr typename Q::Length fm = 1.0e-15 * m;
     static constexpr typename Q::Length km = 1.0e+3  * m;
     static constexpr typename Q::Length au = 149'597'870'700 * m;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Length, 4>> m4 = m * m * m * m; // to ease writing of other units, like F = A2 * s4 / kg / m2
+    static constexpr Quantity<Engine, 0, 4, 0, 0, 0, 0, 0> m4 = m * m * m * m; // to ease writing of other units, like F = A2 * s4 / kg / m2
 
 
     static constexpr typename Q::Time s = Q::Time::fromNumericalValue(1.0 * detail::second_v<Engine>);
@@ -93,9 +86,9 @@ struct SI_units_template {
     static constexpr typename Q::Time h = 3'600 * s;
     static constexpr typename Q::Time d = 24 * 60 * 60 * s;
     static constexpr typename Q::Time yr = 365.25 * 24 * 60 * 60 * s;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Time, 2>> s2 = s * s; // to ease writing of other units, like F = A2 * s4 / kg / m2
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Time, 3>> s3 = s * s * s;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Time, 4>> s4 = s * s * s * s;
+    static constexpr Quantity<Engine, 0, 0, 2, 0, 0, 0, 0> s2 = s * s; // to ease writing of other units, like F = A2 * s4 / kg / m2
+    static constexpr Quantity<Engine, 0, 0, 3, 0, 0, 0, 0> s3 = s * s * s;
+    static constexpr Quantity<Engine, 0, 0, 4, 0, 0, 0, 0> s4 = s * s * s * s;
 
 
     static constexpr typename Q::ElectricCurrent A = Q::ElectricCurrent::fromNumericalValue(1.0 * detail::ampere_v<Engine>);
@@ -108,9 +101,9 @@ struct SI_units_template {
     static constexpr typename Q::ElectricCurrent MA = 1.0e+6  * A;
     static constexpr typename Q::ElectricCurrent GA = 1.0e+9  * A;
     static constexpr typename Q::ElectricCurrent TA = 1.0e+12 * A;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::ElectricCurrent, 2>> A2 = A * A; // to ease writing of other units, like F = A2 * s4 / kg / m2
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::ElectricCurrent, 3>> A3 = A * A * A;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::ElectricCurrent, 4>> A4 = A * A * A * A;
+    static constexpr Quantity<Engine, 0, 0, 0, 2, 0, 0, 0> A2 = A * A; // to ease writing of other units, like F = A2 * s4 / kg / m2
+    static constexpr Quantity<Engine, 0, 0, 0, 3, 0, 0, 0> A3 = A * A * A;
+    static constexpr Quantity<Engine, 0, 0, 0, 4, 0, 0, 0> A4 = A * A * A * A;
 
     static constexpr typename Q::Temperature K = Q::Temperature::fromNumericalValue(1.0 * detail::kelvin_v<Engine>);
     static constexpr typename Q::Temperature mK = 1.0e-3  * K;
@@ -122,21 +115,21 @@ struct SI_units_template {
     static constexpr typename Q::Temperature MK = 1.0e+6  * K;
     static constexpr typename Q::Temperature GK = 1.0e+9  * K;
     static constexpr typename Q::Temperature TK = 1.0e+12 * K;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Temperature, 2>> K2 = K * K; // to ease writing of other units, like F = A2 * s4 / kg / m2
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Temperature, 3>> K3 = K * K * K;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::Temperature, 4>> K4 = K * K * K * K;
+    static constexpr Quantity<Engine, 0, 0, 0, 0, 2, 0, 0> K2 = K * K; // to ease writing of other units, like F = A2 * s4 / kg / m2
+    static constexpr Quantity<Engine, 0, 0, 0, 0, 3, 0, 0> K3 = K * K * K;
+    static constexpr Quantity<Engine, 0, 0, 0, 0, 4, 0, 0> K4 = K * K * K * K;
 //     static constexpr typename Q::Temperature DegC = Q::Temperature::fromNumericalValue(273.15 + 1.0);
 //     static constexpr typename Q::Temperature DegF = Q::Temperature::fromNumericalValue( (459.67 + 1.0) * (5/9) );
 
     static constexpr typename Q::AmountOfSubstance mol = Q::AmountOfSubstance::fromNumericalValue(1.0 * detail::mol_v<Engine>);
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::AmountOfSubstance, 2>> mol2 = mol * mol; // to ease writing of other units, like F = A2 * s4 / kg / m2
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::AmountOfSubstance, 3>> mol3 = mol * mol * mol;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::AmountOfSubstance, 4>> mol4 = mol * mol * mol * mol;
+    static constexpr Quantity<Engine, 0, 0, 0, 0, 0, 2, 0> mol2 = mol * mol; // to ease writing of other units, like F = A2 * s4 / kg / m2
+    static constexpr Quantity<Engine, 0, 0, 0, 0, 0, 3, 0> mol3 = mol * mol * mol;
+    static constexpr Quantity<Engine, 0, 0, 0, 0, 0, 4, 0> mol4 = mol * mol * mol * mol;
 
     static constexpr typename Q::LuminousIntensity cd = Q::LuminousIntensity::fromNumericalValue(1.0 * detail::candela_v<Engine>);
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::LuminousIntensity, 2>> cd2 = cd * cd; // to ease writing of other units, like F = A2 * s4 / kg / m2
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::LuminousIntensity, 3>> cd3 = cd * cd * cd;
-    static constexpr Quantity<Engine, DimensionComponent<base_dimensions::LuminousIntensity, 4>> cd4 = cd * cd * cd * cd;
+    static constexpr Quantity<Engine, 0, 0, 0, 0, 0, 0, 2> cd2 = cd * cd; // to ease writing of other units, like F = A2 * s4 / kg / m2
+    static constexpr Quantity<Engine, 0, 0, 0, 0, 0, 0, 3> cd3 = cd * cd * cd;
+    static constexpr Quantity<Engine, 0, 0, 0, 0, 0, 0, 4> cd4 = cd * cd * cd * cd;
 
     static constexpr typename Q::Area m2 = m * m;
     static constexpr typename Q::Area cm2 = 1.0e-4 * m2;
@@ -366,104 +359,104 @@ struct SI_constants_template {
 template<typename Engn>
 struct SiDimensions
 {
-    template<typename T, int Exponent> using Dim = DimensionComponent<T, Exponent>;
+    // Dimensions order: Mass, Length, Time, ElectricCurrent, Temperature, AmountOfSubstance, LuminousIntesity
 
-    using Length = Quantity<Engn, Dim<base_dimensions::Length, 1>>;
-    using Mass = Quantity<Engn, Dim<base_dimensions::Mass, 1>>;
-    using Time = Quantity<Engn, Dim<base_dimensions::Time, 1>>;
-    using ElectricCurrent = Quantity<Engn, Dim<base_dimensions::ElectricCurrent, 1>>;
-    using Temperature = Quantity<Engn, Dim<base_dimensions::Temperature, 1>>;
-    using AmountOfSubstance = Quantity<Engn, Dim<base_dimensions::AmountOfSubstance, 1>>;
-    using LuminousIntensity = Quantity<Engn, Dim<base_dimensions::LuminousIntensity, 1>>;
+    using Mass =              Quantity<Engn, 1, 0, 0, 0, 0, 0, 0>;
+    using Length =            Quantity<Engn, 0, 1, 0, 0, 0, 0, 0>;
+    using Time =              Quantity<Engn, 0, 0, 1, 0, 0, 0, 0>;
+    using ElectricCurrent =   Quantity<Engn, 0, 0, 0, 1, 0, 0, 0>;
+    using Temperature =       Quantity<Engn, 0, 0, 0, 0, 1, 0, 0>;
+    using AmountOfSubstance = Quantity<Engn, 0, 0, 0, 0, 0, 1, 0>;
+    using LuminousIntensity = Quantity<Engn, 0, 0, 0, 0, 0, 0, 1>;
 
-    using Absement  = Quantity<Engn, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, 1>>;
-    using AbsorbedDoseRate  = Quantity<Engn, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -3>>;
-    using Acceleration  = Quantity<Engn, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -2>>;
-    using AngularAcceleration  = Quantity<Engn, Dim<base_dimensions::Time, -2>>;
-    using AngularMomentum  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -1>>;
-    using AngularSpeed = Quantity<Engn, Dim<base_dimensions::Time, -1>>;
-    using Area  = Quantity<Engn, Dim<base_dimensions::Length, 2>>;
-    using AreaDensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, -2>>;
-    using Capacitance  = Quantity<Engn, Dim<base_dimensions::Mass, -1>, Dim<base_dimensions::Length, -2>, Dim<base_dimensions::Time, 4>, Dim<base_dimensions::ElectricCurrent, 2>>;
-    using CatalyticActivity  = Quantity<Engn, Dim<base_dimensions::Time, -1>, Dim<base_dimensions::AmountOfSubstance, 1>>;
-    using CatalyticActivityConcentration  = Quantity<Engn, Dim<base_dimensions::Length, -3>, Dim<base_dimensions::Time, -1>, Dim<base_dimensions::AmountOfSubstance, 1>>;
-    using ChemicalPotential  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::AmountOfSubstance, -1>>;
-    using Crackle  = Quantity<Engn, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -5>>;
-    using CurrentDensity  = Quantity<Engn, Dim<base_dimensions::Length, -2>, Dim<base_dimensions::ElectricCurrent, 1>>;
-    using DoseEquivalent  = Quantity<Engn, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>>;
-    using DynamicViscosity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, -1>, Dim<base_dimensions::Time, -1>>;
-    using ElectricCharge  = Quantity<Engn, Dim<base_dimensions::Time, 1>, Dim<base_dimensions::ElectricCurrent, 1>>;
-    using ElectricChargeDensity  = Quantity<Engn, Dim<base_dimensions::Length, -3>, Dim<base_dimensions::Time, 1>, Dim<base_dimensions::ElectricCurrent, 1>>;
-    using ElectricDisplacement  = Quantity<Engn, Dim<base_dimensions::Length, -2>, Dim<base_dimensions::Time, 1>, Dim<base_dimensions::ElectricCurrent, 1>>;
-    using ElectricFieldStrength  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -3>, Dim<base_dimensions::ElectricCurrent, -1>>;
-    using ElectricalConductance  = Quantity<Engn, Dim<base_dimensions::Mass, -1>, Dim<base_dimensions::Length, -2>, Dim<base_dimensions::Time, 3>, Dim<base_dimensions::ElectricCurrent, 2>>;
-    using ElectricalConductivity  = Quantity<Engn, Dim<base_dimensions::Mass, -1>, Dim<base_dimensions::Length, -3>, Dim<base_dimensions::Time, 3>, Dim<base_dimensions::ElectricCurrent, 2>>;
-    using ElectricPotential  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -3>, Dim<base_dimensions::ElectricCurrent, -1>>;
-    using ElectricalResistance  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -3>, Dim<base_dimensions::ElectricCurrent, -2>>;
-    using ElectricalResistivity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 3>, Dim<base_dimensions::Time, -3>, Dim<base_dimensions::ElectricCurrent, -2>>;
-    using Energy  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>>;
-    using EnergyDensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, -1>, Dim<base_dimensions::Time, -2>>;
-    using Entropy  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::Temperature, -1>>;
-    using Force  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -2>>;
-    using Frequency  = Quantity<Engn, Dim<base_dimensions::Time, -1>>;
-    using FuelEfficiency  = Quantity<Engn, Dim<base_dimensions::Length, -2>>;
-    using HalfLife  = Quantity<Engn, Dim<base_dimensions::Time, 1>>;
-    using Heat  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>>;
-    using HeatCapacity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::Temperature, -1>>;
-    using HeatFluxDensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Time, -3>>;
-    using Illuminance  = Quantity<Engn, Dim<base_dimensions::Length, -2>, Dim<base_dimensions::LuminousIntensity, 1>>;
-    using Impedance  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -3>, Dim<base_dimensions::ElectricCurrent, -2>>;
-    using Impulse  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -1>>;
-    using Inductance  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::ElectricCurrent, -2>>;
-    using Irradiance  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Time, -3>>;
-    using Intensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Time, -3>>;
-    using Jerk  = Quantity<Engn, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -3>>;
-    using Jounce   = Quantity<Engn, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -4>>;
-    using KinematicViscosity  = Quantity<Engn, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -1>>;
-    using LinearDensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, -1>>;
-    using LuminousFlux   = Quantity<Engn, Dim<base_dimensions::LuminousIntensity, 1>>;
-    using MagneticFieldStrength  = Quantity<Engn, Dim<base_dimensions::Length, -1>, Dim<base_dimensions::ElectricCurrent, 1>>;
-    using MagneticFlux  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::ElectricCurrent, -1>>;
-    using MagneticFluxDensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::ElectricCurrent, -1>>;
-    using Magnetization  = Quantity<Engn, Dim<base_dimensions::Length, -1>, Dim<base_dimensions::ElectricCurrent, 1>>;
-    using MassDensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, -3>>;
-    using MeanLifetime  = Quantity<Engn, Dim<base_dimensions::Time, 1>>;
-    using MolarConcentration  = Quantity<Engn, Dim<base_dimensions::Length, -3>, Dim<base_dimensions::AmountOfSubstance, 1>>;
-    using MolarEnergy  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::AmountOfSubstance, -1>>;
-    using MolarEntropy  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::Temperature, -1>,  Dim<base_dimensions::AmountOfSubstance, -1>>;
-    using MolarHeatCapacity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::Temperature, -1>,  Dim<base_dimensions::AmountOfSubstance, -1>>;
-    using MomentOfInertia  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>>;
-    using Momentum  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -1>>;
-    using Permeability  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::ElectricCurrent, -2>>;
-    using Permittivity  = Quantity<Engn, Dim<base_dimensions::Mass, -1>, Dim<base_dimensions::Length, -3>, Dim<base_dimensions::Time, 4>, Dim<base_dimensions::ElectricCurrent, 2>>;
-    using Power  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -3>>;
-    using Pressure  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, -1>, Dim<base_dimensions::Time, -2>>;
-    using Pop  = Quantity<Engn, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -6>>;
-    using Activity  = Quantity<Engn, Dim<base_dimensions::Time, -1>>;
-    using Dose  = Quantity<Engn, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>>;
-    using Radiance  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Time, -3>>;
-    using RadiantIntensity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -3>>;
-    using ReactionRate  = Quantity<Engn, Dim<base_dimensions::Length, -3>, Dim<base_dimensions::Time, -1>, Dim<base_dimensions::AmountOfSubstance, 1>>;
-    using Reluctance  = Quantity<Engn, Dim<base_dimensions::Mass, -1>, Dim<base_dimensions::Length, -2>, Dim<base_dimensions::Time, 2>, Dim<base_dimensions::ElectricCurrent, 2>>;
-    using Speed  = Quantity<Engn, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -1>>;
-    using SpecificEnergy  = Quantity<Engn, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>>;
-    using SpecificHeatCapacity  = Quantity<Engn, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>, Dim<base_dimensions::Temperature, -1>>;
-    using SpecificVolume  = Quantity<Engn, Dim<base_dimensions::Mass, -1>, Dim<base_dimensions::Length, 3>>;
-    using Spin  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -1>>;
-    using Stress  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, -1>, Dim<base_dimensions::Time, -2>>;
-    using SurfaceTension  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Time, -2>>;
-    using TemperatureGradient  = Quantity<Engn, Dim<base_dimensions::Length, -1>, Dim<base_dimensions::Temperature, 1>>;
-    using ThermalConductivity  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -3>, Dim<base_dimensions::Temperature, -1>>;
-    using Torque  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>>;
-    using Velocity  = Quantity<Engn, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -1>>;
-    using Volume  = Quantity<Engn, Dim<base_dimensions::Length, 3>>;
-    using VolumetricFlowRate  = Quantity<Engn, Dim<base_dimensions::Length, 3>, Dim<base_dimensions::Time, -1>>;
-    using Wavelength  = Quantity<Engn, Dim<base_dimensions::Length, 1>>;
-    using Wavenumber  = Quantity<Engn, Dim<base_dimensions::Length, -1>>;
-    using Wavevector  = Quantity<Engn, Dim<base_dimensions::Length, -1>>;
-    using Weight  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 1>, Dim<base_dimensions::Time, -2>>;
-    using Work  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, 2>, Dim<base_dimensions::Time, -2>>;
-    using YoungsModulus  = Quantity<Engn, Dim<base_dimensions::Mass, 1>, Dim<base_dimensions::Length, -1>, Dim<base_dimensions::Time, -2>>;
+    using Absement  = Quantity<Engn, 0, 1, 1, 0, 0, 0, 0>;
+    using AbsorbedDoseRate  = Quantity<Engn, 0, 2, -3, 0, 0, 0, 0>;
+    using Acceleration  = Quantity<Engn, 0, 1, -2, 0, 0, 0, 0>;
+    using AngularAcceleration  = Quantity<Engn, 0, -2, -2, 0, 0, 0, 0>;
+    using AngularMomentum  = Quantity<Engn, 1, 2, -1, 0, 0, 0, 0>;
+    using AngularSpeed = Quantity<Engn, 0, 0, -1, 0, 0, 0, 0>;
+    using Area  = Quantity<Engn, 0, 2, 0, 0, 0, 0, 0>;
+    using AreaDensity  = Quantity<Engn, 1, -2, 0, 0, 0, 0, 0>;
+    using Capacitance  = Quantity<Engn, -1, -2, 4, 2, 0, 0, 0>;
+    using CatalyticActivity  = Quantity<Engn, 0, 0, -1, 0, 0, 1, 0>;
+    using CatalyticActivityConcentration  = Quantity<Engn, 0, -3, -1, 0, 0, 1, 0>;
+    using ChemicalPotential  = Quantity<Engn, 1, 2, -2, 0, 0, -1, 0>;
+    using Crackle  = Quantity<Engn, 0, 1, -5, 0, 0, 0, 0>;
+    using CurrentDensity  = Quantity<Engn, 0, -2, 0, 1, 0, 0, 0>;
+    using DoseEquivalent  = Quantity<Engn, 0, 2, -2, 0, 0, 0, 0>;
+    using DynamicViscosity  = Quantity<Engn, 1, -1, -1, 0, 0, 0, 0>;
+    using ElectricCharge  = Quantity<Engn, 0, 0, 1, 1, 0, 0, 0>;
+    using ElectricChargeDensity  = Quantity<Engn, 0, -3, 1, 1, 0, 0, 0>;
+    using ElectricDisplacement  = Quantity<Engn, 0, -2, 1, 1, 0, 0, 0>;
+    using ElectricFieldStrength  = Quantity<Engn, 1, 1, -3, -1, 0, 0, 0>;
+    using ElectricalConductance  = Quantity<Engn, -1, -2, 3, 2, 0, 0, 0>;
+    using ElectricalConductivity  = Quantity<Engn, -1, -3, 3, 2, 0, 0, 0>;
+    using ElectricPotential  = Quantity<Engn, 1, 2, -3, -1, 0, 0, 0>;
+    using ElectricalResistance  = Quantity<Engn, 1, 2, -3, -2, 0, 0, 0>;
+    using ElectricalResistivity  = Quantity<Engn, 1, 3, -3, -2, 0, 0, 0>;
+    using Energy  = Quantity<Engn, 1, 2, -2, 0, 0, 0, 0>;
+    using EnergyDensity  = Quantity<Engn, 1, -1, -2, 0, 0, 0, 0>;
+    using Entropy  = Quantity<Engn, 1, 2, -2, 0, -1, 0, 0>;
+    using Force  = Quantity<Engn, 1, 1, -2, 0, 0, 0, 0>;
+    using Frequency  = Quantity<Engn, 0, 0, -1, 0, 0, 0, 0>;
+    using FuelEfficiency  = Quantity<Engn, 0, -2, 0, 0, 0, 0, 0>;
+    using HalfLife  = Quantity<Engn, 0, 0, 1, 0, 0, 0, 0>;
+    using Heat  = Quantity<Engn, 1, 2, -2, 0, 0, 0, 0>;
+    using HeatCapacity  = Quantity<Engn, 1, 2, -2, 0, -1, 0, 0>;
+    using HeatFluxDensity  = Quantity<Engn, 1, 0, -3, 0, 0, 0, 0>;
+    using Illuminance  = Quantity<Engn, 0, -2, 0, 0, 0, 0, 1>;
+    using Impedance  = Quantity<Engn, 1, 2, -3, -2, 0, 0, 0>;
+    using Impulse  = Quantity<Engn, 1, 1, -1, 0, 0, 0, 0>;
+    using Inductance  = Quantity<Engn, 1, 2, -2, -2, 0, 0, 0>;
+    using Irradiance  = Quantity<Engn, 1, 0, -3, 0, 0, 0, 0>;
+    using Intensity  = Quantity<Engn, 1, 0, -3, 0, 0, 0, 0>;
+    using Jerk  = Quantity<Engn, 0, 1, -3, 0, 0, 0, 0>;
+    using Jounce   = Quantity<Engn, 0, 1, -4, 0, 0, 0, 0>;
+    using KinematicViscosity  = Quantity<Engn, 0, 2, -1, 0, 0, 0, 0>;
+    using LinearDensity  = Quantity<Engn, 1, -1, 0, 0, 0, 0, 0>;
+    using LuminousFlux   = Quantity<Engn, 0, 0, 0, 0, 0, 0, 1>;
+    using MagneticFieldStrength  = Quantity<Engn, 0, -1, 0, 1, 0, 0, 0>;
+    using MagneticFlux  = Quantity<Engn, 1, 2, -2, -1, 0, 0, 0>;
+    using MagneticFluxDensity  = Quantity<Engn, 1, 0, -2, -1, 0, 0, 0>;
+    using Magnetization  = Quantity<Engn, 0, -1, 0, 1, 0, 0, 0>;
+    using MassDensity  = Quantity<Engn, 1, -3, 0, 0, 0, 0, 0>;
+    using MeanLifetime  = Quantity<Engn, 0, 0, 1, 0, 0, 0, 0>;
+    using MolarConcentration  = Quantity<Engn, 0, -3, 0, 0, 0, 1, 0>;
+    using MolarEnergy  = Quantity<Engn, 1, 2, -2, 0, 0, -1, 0>;
+    using MolarEntropy  = Quantity<Engn, 1, 2, -2, 0, -1, -1, 0>;
+    using MolarHeatCapacity  = Quantity<Engn, 1, 2, -2, 0, -1, -1, 0>;
+    using MomentOfInertia  = Quantity<Engn, 1, 2, 0, 0, 0, 0, 0>;
+    using Momentum  = Quantity<Engn, 1, 1, -1, 0, 0, 0, 0>;
+    using Permeability  = Quantity<Engn, 1, 1, -2, -2, 0, 0, 0>;
+    using Permittivity  = Quantity<Engn, -1, -3, 4, 2, 0, 0, 0>;
+    using Power  = Quantity<Engn, 1, 2, -3, 0, 0, 0, 0>;
+    using Pressure  = Quantity<Engn, 1, -1, -2, 0, 0, 0, 0>;
+    using Pop  = Quantity<Engn, 0, 1, -6, 0, 0, 0, 0>;
+    using Activity  = Quantity<Engn, 0, 0, -1, 0, 0, 0, 0>;
+    using Dose  = Quantity<Engn, 0, 2, -2, 0, 0, 0, 0>;
+    using Radiance  = Quantity<Engn, 1, 0, -3, 0, 0, 0, 0>;
+    using RadiantIntensity  = Quantity<Engn, 1, 2, -3, 0, 0, 0, 0>;
+    using ReactionRate  = Quantity<Engn, 0, -3, -1, 0, 0, 1, 0>;
+    using Reluctance  = Quantity<Engn, -1, -2, 2, 2, 0, 0, 0>;
+    using Speed  = Quantity<Engn, 0, 1, -1, 0, 0, 0, 0>;
+    using SpecificEnergy  = Quantity<Engn, 0, 2, -2, 0, 0, 0, 0>;
+    using SpecificHeatCapacity  = Quantity<Engn, 0, 2, -2, 0, -1, 0, 0>;
+    using SpecificVolume  = Quantity<Engn, -1, 3, 0, 0, 0, 0, 0>;
+    using Spin  = Quantity<Engn, 1, 2, -1, 0, 0, 0, 0>;
+    using Stress  = Quantity<Engn, 1, -1, -2, 0, 0, 0, 0>;
+    using SurfaceTension  = Quantity<Engn, 1, 0, -2, 0, 0, 0, 0>;
+    using TemperatureGradient  = Quantity<Engn, 0, -1, 0, 0, 1, 0, 0>;
+    using ThermalConductivity  = Quantity<Engn, 1, 1, -3, 0, -1, 0, 0>;
+    using Torque  = Quantity<Engn, 1, 2, -2, 0, 0, 0, 0>;
+    using Velocity  = Quantity<Engn, 0, 1, -1, 0, 0, 0, 0>;
+    using Volume  = Quantity<Engn, 0, 3, 0, 0, 0, 0, 0>;
+    using VolumetricFlowRate  = Quantity<Engn, 0, 3, -1, 0, 0, 0, 0>;
+    using Wavelength  = Quantity<Engn, 0, 1, 0, 0, 0, 0, 0>;
+    using Wavenumber  = Quantity<Engn, 0, -1, 0, 0, 0, 0, 0>;
+    using Wavevector  = Quantity<Engn, 0, -1, 0, 0, 0, 0, 0>;
+    using Weight  = Quantity<Engn, 1, 1, -2, 0, 0, 0, 0>;
+    using Work  = Quantity<Engn, 1, 2, -2, 0, 0, 0, 0>;
+    using YoungsModulus  = Quantity<Engn, 1, -1, -2, 0, 0, 0, 0>;
 
 };
 
@@ -473,8 +466,8 @@ struct SiEngine
     using SystemOfDimensions = SiDimensions<SiEngine>;
     using referenceEngine = void;
 
-    template<typename T> static constexpr auto unitString = detail::unitString<T>;
-    template<typename T> static constexpr double baseUnit = 1.0;
+    static constexpr std::array<const char*, 7> unitStrings = { "m", "kg", "s", "A", "K", "mol", "cd" };
+    static constexpr std::array<double, 7> baseUnits { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
 
     using units = SI_units_template<SiEngine>;
     using constants = SI_constants_template<SiEngine>;

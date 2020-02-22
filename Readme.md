@@ -101,24 +101,22 @@ int main()
 ### Using custom quantities
 
 Generic (templated) code in C++ often comes with the drawback of very bold type names. This is
-true for Quantityland2's Quantity type as well. If you just need to create a variable of some
-complex quantity type, just use **auto** and you're done. If you need it e.g. for a function
-parameter, things get more complex.
-
+true for Quantityland2's Quantity type as well, even though we do our best to keep them as terse
+as possible. If you just need to create a variable of some complex quantity type, just use **auto**
+and you're done. If you need it e.g. for a function parameter, things get more complex. Quantities
+that use the SI or an SI derived system have 7 integers as template parameters. They stand
+- in this order - for the exponents to the dimensions mass, length, time, electric current,
+temperature, amount of substance, luminous intensity.
 
 Fortunately, Quantityland2 comes with a long list of predefined type aliases for common physical
 quantities. E.g. SI::Permittivity is a type alias for
 ```
-Quantity<SI, DimensionComponent<base_dimensions::Mass, -1>,
-             DimensionComponent<base_dimensions::Length, -3>,
-             DimensionComponent<base_dimensions::Time, 4>,
-             DimensionComponent<base_dimensions::ElectricCurrent, 2>>;
+Quantity<SiEngine, -1, -3, 4, 2, 0, 0, 0>;
 ```
 
 Still, we can't name all possible quantities, you might work with. Working with the bare, bold
-quantity type identifiers is not only tedious, but also error prone. This is because in order to
-keep the internals of Quantityland2 maintainable, the dimension components in quantities must
-maintain a strict ordering (first Mass, then Length, then Time, etc.).
+quantity type identifiers is not only tedious, but also error prone (you might get weird error
+messages when you specify the exponents in the wrong order)
 
 Thus, we recommend you to define type aliases for all quantities you use regularly. By using
 decltype, you can circumvent ever having to specify quantity type-names explicitly:
@@ -153,19 +151,13 @@ using namespace Quantityland2;
 struct C60Engine
 {
     using NumberType = double;
-    using SystemOfDimensions = SiDimensions<CGSEngine>;
+    using SystemOfDimensions = SiDimensions<C60Engine>;
     using referenceEngine = SI; // allow conversion from/to SI and other SI-derived engines
 
-    template<typename T> static constexpr auto baseUnit = 1.0; // this is only there to be specialized
+    static constexpr std::tuple baseUnits { 1.1967e-24_kg, 0.14e-9_m, 1.0_s, 1.0_A, 1.0_K, 1.0_mol, 1.0_cd }; // the order is very important here!
     using units = SI_units_template<C60Engine>; // inherit basic unit constants (like m, kg, s) from SI
     using constants = SI_constants_template<C60Engine>;  // some common constants, readily represented in C60-units :)
 };
-// base units in SI units, allows automatic unit conversion (ISO C++ requires specializations of member templates to happen outside the class)
-template<> constexpr SI::Length          C60Quantities::baseUnit<typename base_dimensions::Length> = 0.14e-9 * SI::units::m; // average bond length in a C60-fullerene
-template<> constexpr SI::Mass            C60Quantities::baseUnit<typename base_dimensions::Mass> = 1.1967e-24 * SI::units::kg; // mass of a C60-fullerene
-template<> constexpr SI::Time            C60Quantities::baseUnit<typename base_dimensions::Time> = 1.0 * SI::units::s;
-template<> constexpr SI::ElectricCurrent C60Quantities::baseUnit<typename base_dimensions::ElectricCurrent> = 1.0 * SI::units::A;
-
 using C60Quantities = SystemOfQuantities<C60Engine>;
 
 int main()

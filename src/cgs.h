@@ -22,6 +22,7 @@
 
 #include "quantityland2.h"
 #include "si.h"
+#include <tuple>
 
 namespace Quantityland2 {
 
@@ -33,14 +34,19 @@ struct CGSEngine
 
     template<typename T> static constexpr double baseUnit = 1.0;
 
+    static constexpr std::tuple baseUnits = {
+        0.001 * SI::units::kg,
+        0.01 * SI::units::m,
+        1.0 * SI::units::s,
+        1.0 * SI::units::A,
+        1.0 * SI::units::K,
+        1.0 * SI::units::mol,
+        1.0 * SI::units::cd
+    };
+
     using units = SI_units_template<CGSEngine>;
     using constants = SI_constants_template<CGSEngine>;
 };
-
-template<> constexpr SI::Length CGSEngine::baseUnit<typename base_dimensions::Length> = 0.01 * SI::units::m;
-template<> constexpr SI::Mass CGSEngine::baseUnit<typename base_dimensions::Mass> = 0.001 * SI::units::kg;
-template<> constexpr SI::Time CGSEngine::baseUnit<typename base_dimensions::Time> = 1.0 * SI::units::s;
-template<> constexpr SI::ElectricCurrent CGSEngine::baseUnit<typename base_dimensions::ElectricCurrent> = 1.0 * SI::units::A;
 
 using CGS = SystemOfQuantities<CGSEngine>;
 

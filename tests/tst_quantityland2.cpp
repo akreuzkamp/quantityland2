@@ -31,179 +31,149 @@ constexpr double pi = M_PI;
 
 using namespace std::complex_literals;
 using namespace Quantityland2;
-using namespace Quantityland2::base_dimensions;
 using namespace Quantityland2::SI_literals;
+
+// Multiplication
+// static_assert(std::is_same_v<Quantity<void, 1, 0, 0> );
 
 
 // Multiplication
-static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Length, 1>>,
-    Quantity<void> >,
-    Quantity<void, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 0, 1, 0>>() * std::declval<Quantity<void, 0, 0, 0>>()),
+    Quantity<void, 0, 1, 0>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void>,
-    Quantity<void, DimensionComponent<Length, 1>> >,
-    Quantity<void, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 0, 0, 0>>() * std::declval<Quantity<void, 0, 1, 0>>()),
+    Quantity<void, 0, 1, 0>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Length, 1>>,
-    Quantity<void, DimensionComponent<Length, 1>> >,
-    Quantity<void, DimensionComponent<Length, 2>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 0, 1, 0>>() * std::declval<Quantity<void, 0, 1, 0>>()),
+    Quantity<void, 0, 2, 0>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Mass, 1>>,
-    Quantity<void, DimensionComponent<Length, 1>> >,
-    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 1, 0, 0>>() * std::declval<Quantity<void, 0, 1, 0>>()),
+    Quantity<void, 1, 1, 0>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Length, 1>>,
-    Quantity<void, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 0, 1, 0>>() * std::declval<Quantity<void, 1, 0, 0>>()),
+    Quantity<void, 1, 1, 0>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
-    Quantity<void, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Mass, 3>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() * std::declval<Quantity<void, 1, 0, 0>>()),
+    Quantity<void, 3, 1, 0>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
-    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 3>> >,
-    Quantity<void, DimensionComponent<Mass, 3>, DimensionComponent<Length, 4>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() * std::declval<Quantity<void, 1, 3, 0>>()),
+    Quantity<void, 3, 4, 0>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Time, 2>>,
-    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 3>> >,
-    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 4>, DimensionComponent<Time, 2>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 0, 1, 2>>() * std::declval<Quantity<void, 1, 3, 0>>()),
+    Quantity<void, 1, 4, 2>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
-    Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Time, -1>> >,
-    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 4>, DimensionComponent<Time, -1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() * std::declval<Quantity<void, 0, 3, -1>>()),
+    Quantity<void, 2, 4, -1>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
-        Quantity<void, DimensionComponent<Mass, -2>, DimensionComponent<Length, 3>> >,
-        Quantity<void, DimensionComponent<Length, 4>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() * std::declval<Quantity<void, -2, 3, 0>>()),
+    Quantity<void, 0, 4, 0>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 1>, DimensionComponent<Time, 1>>,
-Quantity<void, DimensionComponent<Length, 1>> >,
-Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 2>, DimensionComponent<Time, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 1, 1, 0>>() * std::declval<Quantity<void, 0, 1, 0>>()),
+    Quantity<void, 1, 2, 0>
 >);
-static_assert(std::is_same_v<detail::mergeMul_t<
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
-        Quantity<void, DimensionComponent<Mass, -2>, DimensionComponent<Length, -1>> >,
-        double
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() * std::declval<Quantity<void, -2, -1, 0>>()),
+    double
 >);
 
 // Division
-static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Length, 1>>,
-    Quantity<void> >,
-    Quantity<void, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 0, 1, 0>>() / std::declval<Quantity<void, 0, 0, 0>>()),
+    Quantity<void, 0, 1, 0>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void>,
-    Quantity<void, DimensionComponent<Length, 1>> >,
-    Quantity<void, DimensionComponent<Length, -1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 0, 0, 0>>() / std::declval<Quantity<void, 0, 1, 0>>()),
+    Quantity<void, 0, -1, 0>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Length, 3>>,
-    Quantity<void, DimensionComponent<Length, 1>> >,
-    Quantity<void, DimensionComponent<Length, 2>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 0, 3, 0>>() / std::declval<Quantity<void, 0, 1, 0>>()),
+    Quantity<void, 0, 2, 0>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Mass, 1>>,
-    Quantity<void, DimensionComponent<Length, 1>> >,
-    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, -1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 1, 0, 0>>() / std::declval<Quantity<void, 0, 1, 0>>()),
+    Quantity<void, 1, -1, 0>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Length, 1>>,
-    Quantity<void, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Mass, -1>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 0, 1, 0>>() / std::declval<Quantity<void, 1, 0, 0>>()),
+    Quantity<void, -1, 1, 0>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
-    Quantity<void, DimensionComponent<Mass, 1>> >,
-    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() / std::declval<Quantity<void, 1, 0, 0>>()),
+    Quantity<void, 1, 1, 0>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
-    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 3>> >,
-    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, -2>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() / std::declval<Quantity<void, 1, 3, 0>>()),
+    Quantity<void, 1, -2, 0>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Length, 1>, DimensionComponent<Time, 2>>,
-    Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, 3>> >,
-    Quantity<void, DimensionComponent<Mass, -1>, DimensionComponent<Length, -2>, DimensionComponent<Time, 2>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 0, 1, 2>>() / std::declval<Quantity<void, 1, 3, 0>>()),
+    Quantity<void, -1, -2, 2>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
-    Quantity<void, DimensionComponent<Length, 3>, DimensionComponent<Time, -1>> >,
-    Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, -2>, DimensionComponent<Time, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() / std::declval<Quantity<void, 0, 3, -1>>()),
+    Quantity<void, 2, -2, 1>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 3>> >,
-        Quantity<void, DimensionComponent<Length, -2>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() / std::declval<Quantity<void, 2, 3, 0>>()),
+    Quantity<void, 0, -2, 0>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, -1>, DimensionComponent<Time, 1>>,
-Quantity<void, DimensionComponent<Length, 1>> >,
-Quantity<void, DimensionComponent<Mass, 1>, DimensionComponent<Length, -2>, DimensionComponent<Time, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 1, -1, 0>>() / std::declval<Quantity<void, 0, 1, 0>>()),
+    Quantity<void, 1, -2, 0>
 >);
-static_assert(std::is_same_v<detail::mergeDiv_t<
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>,
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >,
-        double
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() / std::declval<Quantity<void, 2, 1, 0>>()),
+    double
 >);
 
 
 // Multiplication / Division with/by scalars
 
-static_assert(std::is_same_v<decltype(
-            std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >() * std::declval<double>()
-        ),
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() * std::declval<double>()),
+    Quantity<void, 2, 1, 0>
 >);
-static_assert(std::is_same_v<decltype(
-            std::declval<double>() * std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >()
-        ),
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<double>() * std::declval<Quantity<void, 2, 1, 0>>()),
+    Quantity<void, 2, 1, 0>
 >);
 
-static_assert(std::is_same_v<decltype(
-            std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >() / std::declval<double>()
-        ),
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0> >() / std::declval<double>()),
+    Quantity<void, 2, 1, 0>
 >);
-static_assert(std::is_same_v<decltype(
-            std::declval<double>() / std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >()
-        ),
-        Quantity<void, DimensionComponent<Mass, -2>, DimensionComponent<Length, -1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<double>() / std::declval<Quantity<void, 2, 1, 0> >()),
+    Quantity<void, -2, -1, 0>
 >);
 
-static_assert(std::is_same_v<decltype(
-            std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >() * std::declval<int>()
-        ),
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0>>() * std::declval<int>()),
+    Quantity<void, 2, 1, 0>
 >);
-static_assert(std::is_same_v<decltype(
-            std::declval<int>() * std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >()
-        ),
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<int>() * std::declval<Quantity<void, 2, 1, 0> >()),
+    Quantity<void, 2, 1, 0>
 >);
 
-static_assert(std::is_same_v<decltype(
-            std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >() / std::declval<int>()
-        ),
-        Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, 1, 0> >() / std::declval<int>()),
+    Quantity<void, 2, 1, 0>
 >);
-static_assert(std::is_same_v<decltype(
-            std::declval<int>() / std::declval<Quantity<void, DimensionComponent<Mass, 2>, DimensionComponent<Length, 1>> >()
-        ),
-        Quantity<void, DimensionComponent<Mass, -2>, DimensionComponent<Length, -1>>
+static_assert(std::is_same_v<
+    decltype(std::declval<int>() / std::declval<Quantity<void, 2, 1, 0> >()),
+    Quantity<void, -2, -1, 0>
 >);
 
 // Addition and substraction
@@ -302,17 +272,17 @@ static_assert(canAssign_v<NaturalUnits::Length, NaturalUnits::Time>);
 static_assert(!canAssign_v<NaturalUnits::Mass, NaturalUnits::Time>);
 static_assert(nu_l.numericalValue() == nu_t.numericalValue());
 
-constexpr Quantity<SiEngine, DimensionComponent<Mass, -1>> tmp = nu_l;
+constexpr Quantity<SiEngine, -1, 0, 0, 0, 0, 0, 0> tmp = NaturalUnits::toSiDimensions<Quantity<SiEngine, -1, 0, 0, 0, 0, 0, 0>>(nu_l);
 static_assert(tmp.numericalValue() != nu_l.numericalValue());
 constexpr auto si_l_man = tmp * SI::constants::h_bar / SI::constants::c_0;
 constexpr auto si_l_auto = NaturalUnits::toSiDimensions<SI::Length>(nu_l);
 constexpr auto cgs_l_auto = NaturalUnits::toSiDimensions<CGS::Length>(nu_l);
-constexpr NaturalUnits::Length nu_l2 = si_l_man / SI::constants::h_bar * SI::constants::c_0;
+constexpr NaturalUnits::Length nu_l2 = NaturalUnits::fromSiDimensions(si_l_man / SI::constants::h_bar * SI::constants::c_0);
 constexpr NaturalUnits::Length nu_l3 = NaturalUnits::fromSiDimensions(si_l_man);
-constexpr NaturalUnits::Length nu_l4 = si_l_auto / SI::constants::h_bar * SI::constants::c_0;
+constexpr NaturalUnits::Length nu_l4 = NaturalUnits::fromSiDimensions(si_l_auto / SI::constants::h_bar * SI::constants::c_0);
 constexpr NaturalUnits::Length nu_l5 = NaturalUnits::fromSiDimensions(si_l_auto);
 constexpr NaturalUnits::Time minInNU_auto = NaturalUnits::fromSiDimensions(SI::units::min);
-constexpr NaturalUnits::Time minInNU_man = SI::units::min / SI::constants::h_bar * SI::constants::c_0 * SI::constants::c_0;
+constexpr NaturalUnits::Time minInNU_man = NaturalUnits::fromSiDimensions(SI::units::min / SI::constants::h_bar * SI::constants::c_0 * SI::constants::c_0);
 
 
 static_assert(fuzzy_equal(NaturalUnits::fromSiDimensions(SI::units::eV).numericalValue(), 1.0));
@@ -389,10 +359,8 @@ int main() {
 struct TestEngine : public SiDimensions<TestEngine>
 {
     using referenceEngine = SiEngine;
-    template<typename T> static constexpr auto baseUnit = 1.0;
+    static constexpr std::tuple baseUnits {1.9884e30_kg, 149'597'870.7_km, 1.0, 1.0, 1.0, 1.0, 1.0 };
 };
-template<> constexpr SI::Length TestEngine::baseUnit<typename base_dimensions::Length> = 149'597'870.7_km;
-template<> constexpr SI::Mass   TestEngine::baseUnit<typename base_dimensions::Mass> = 1.9884e30_kg;
 
 constexpr CGS::Length cgsA = CGS::Length::fromNumericalValue(29'919'574'140'000);
 constexpr TestEngine::Length testEngnA = cgsA;
@@ -402,97 +370,6 @@ constexpr TestEngine::Mass testEngnM = TestEngine::Mass::fromNumericalValue(10.0
 constexpr CGS::Mass cgsM = testEngnM;
 static_assert(cgsM.numericalValue() == 1.9884e34);
 
-// Test
-
-static_assert(verifyDimensionOrder_v<SI::Absement                      >);
-static_assert(verifyDimensionOrder_v<SI::AbsorbedDoseRate              >);
-static_assert(verifyDimensionOrder_v<SI::Acceleration                  >);
-static_assert(verifyDimensionOrder_v<SI::AngularAcceleration           >);
-static_assert(verifyDimensionOrder_v<SI::AngularMomentum               >);
-static_assert(verifyDimensionOrder_v<SI::AngularSpeed                  >);
-static_assert(verifyDimensionOrder_v<SI::Area                          >);
-static_assert(verifyDimensionOrder_v<SI::AreaDensity                   >);
-static_assert(verifyDimensionOrder_v<SI::Capacitance                   >);
-static_assert(verifyDimensionOrder_v<SI::CatalyticActivity             >);
-static_assert(verifyDimensionOrder_v<SI::CatalyticActivityConcentration>);
-static_assert(verifyDimensionOrder_v<SI::ChemicalPotential             >);
-static_assert(verifyDimensionOrder_v<SI::Crackle                       >);
-static_assert(verifyDimensionOrder_v<SI::CurrentDensity                >);
-static_assert(verifyDimensionOrder_v<SI::DoseEquivalent                >);
-static_assert(verifyDimensionOrder_v<SI::DynamicViscosity              >);
-static_assert(verifyDimensionOrder_v<SI::ElectricCharge                >);
-static_assert(verifyDimensionOrder_v<SI::ElectricChargeDensity         >);
-static_assert(verifyDimensionOrder_v<SI::ElectricDisplacement          >);
-static_assert(verifyDimensionOrder_v<SI::ElectricFieldStrength         >);
-static_assert(verifyDimensionOrder_v<SI::ElectricalConductance         >);
-static_assert(verifyDimensionOrder_v<SI::ElectricalConductivity        >);
-static_assert(verifyDimensionOrder_v<SI::ElectricPotential             >);
-static_assert(verifyDimensionOrder_v<SI::ElectricalResistance          >);
-static_assert(verifyDimensionOrder_v<SI::ElectricalResistivity         >);
-static_assert(verifyDimensionOrder_v<SI::Energy                        >);
-static_assert(verifyDimensionOrder_v<SI::EnergyDensity                 >);
-static_assert(verifyDimensionOrder_v<SI::Entropy                       >);
-static_assert(verifyDimensionOrder_v<SI::Force                         >);
-static_assert(verifyDimensionOrder_v<SI::Frequency                     >);
-static_assert(verifyDimensionOrder_v<SI::FuelEfficiency                >);
-static_assert(verifyDimensionOrder_v<SI::HalfLife                      >);
-static_assert(verifyDimensionOrder_v<SI::Heat                          >);
-static_assert(verifyDimensionOrder_v<SI::HeatCapacity                  >);
-static_assert(verifyDimensionOrder_v<SI::HeatFluxDensity               >);
-static_assert(verifyDimensionOrder_v<SI::Illuminance                   >);
-static_assert(verifyDimensionOrder_v<SI::Impedance                     >);
-static_assert(verifyDimensionOrder_v<SI::Impulse                       >);
-static_assert(verifyDimensionOrder_v<SI::Inductance                    >);
-static_assert(verifyDimensionOrder_v<SI::Irradiance                    >);
-static_assert(verifyDimensionOrder_v<SI::Intensity                     >);
-static_assert(verifyDimensionOrder_v<SI::Jerk                          >);
-static_assert(verifyDimensionOrder_v<SI::Jounce                        >);
-static_assert(verifyDimensionOrder_v<SI::KinematicViscosity            >);
-static_assert(verifyDimensionOrder_v<SI::LinearDensity                 >);
-static_assert(verifyDimensionOrder_v<SI::LuminousFlux                  >);
-static_assert(verifyDimensionOrder_v<SI::MagneticFieldStrength         >);
-static_assert(verifyDimensionOrder_v<SI::MagneticFlux                  >);
-static_assert(verifyDimensionOrder_v<SI::MagneticFluxDensity           >);
-static_assert(verifyDimensionOrder_v<SI::Magnetization                 >);
-static_assert(verifyDimensionOrder_v<SI::MassDensity                   >);
-static_assert(verifyDimensionOrder_v<SI::MeanLifetime                  >);
-static_assert(verifyDimensionOrder_v<SI::MolarConcentration            >);
-static_assert(verifyDimensionOrder_v<SI::MolarEnergy                   >);
-static_assert(verifyDimensionOrder_v<SI::MolarEntropy                  >);
-static_assert(verifyDimensionOrder_v<SI::MolarHeatCapacity             >);
-static_assert(verifyDimensionOrder_v<SI::MomentOfInertia               >);
-static_assert(verifyDimensionOrder_v<SI::Momentum                      >);
-static_assert(verifyDimensionOrder_v<SI::Permeability                  >);
-static_assert(verifyDimensionOrder_v<SI::Permittivity                  >);
-static_assert(verifyDimensionOrder_v<SI::Power                         >);
-static_assert(verifyDimensionOrder_v<SI::Pressure                      >);
-static_assert(verifyDimensionOrder_v<SI::Pop                           >);
-static_assert(verifyDimensionOrder_v<SI::Activity                      >);
-static_assert(verifyDimensionOrder_v<SI::Dose                          >);
-static_assert(verifyDimensionOrder_v<SI::Radiance                      >);
-static_assert(verifyDimensionOrder_v<SI::RadiantIntensity              >);
-static_assert(verifyDimensionOrder_v<SI::ReactionRate                  >);
-static_assert(verifyDimensionOrder_v<SI::Reluctance                    >);
-static_assert(verifyDimensionOrder_v<SI::Speed                         >);
-static_assert(verifyDimensionOrder_v<SI::SpecificEnergy                >);
-static_assert(verifyDimensionOrder_v<SI::SpecificHeatCapacity          >);
-static_assert(verifyDimensionOrder_v<SI::SpecificVolume                >);
-static_assert(verifyDimensionOrder_v<SI::Spin                          >);
-static_assert(verifyDimensionOrder_v<SI::Stress                        >);
-static_assert(verifyDimensionOrder_v<SI::SurfaceTension                >);
-static_assert(verifyDimensionOrder_v<SI::TemperatureGradient           >);
-static_assert(verifyDimensionOrder_v<SI::ThermalConductivity           >);
-static_assert(verifyDimensionOrder_v<SI::Torque                        >);
-static_assert(verifyDimensionOrder_v<SI::Velocity                      >);
-static_assert(verifyDimensionOrder_v<SI::Volume                        >);
-static_assert(verifyDimensionOrder_v<SI::VolumetricFlowRate            >);
-static_assert(verifyDimensionOrder_v<SI::Wavelength                    >);
-static_assert(verifyDimensionOrder_v<SI::Wavenumber                    >);
-static_assert(verifyDimensionOrder_v<SI::Wavevector                    >);
-static_assert(verifyDimensionOrder_v<SI::Weight                        >);
-static_assert(verifyDimensionOrder_v<SI::Work                          >);
-static_assert(verifyDimensionOrder_v<SI::YoungsModulus                 >);
-
 // Test float number support
 
 struct FloatSiEngine
@@ -500,7 +377,7 @@ struct FloatSiEngine
     using NumberType = float;
     using SystemOfDimensions = SiDimensions<FloatSiEngine>;
 
-    template<typename T> static constexpr double baseUnit = 1.0;
+    static constexpr std::tuple baseUnits { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
 
     using units = SI_units_template<FloatSiEngine>;
     using constants = SI_constants_template<FloatSiEngine>;
@@ -519,7 +396,7 @@ struct ComplexSiEngine
     using NumberType = std::complex<double>;
     using SystemOfDimensions = SiDimensions<ComplexSiEngine>;
 
-    template<typename T> static constexpr double baseUnit = 1.0;
+    static constexpr std::tuple baseUnits { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
 
     using units = SI_units_template<ComplexSiEngine>;
     using constants = SI_constants_template<ComplexSiEngine>;
