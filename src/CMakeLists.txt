@@ -12,8 +12,9 @@ message( STATUS "LIBRARY_INSTALL_PATH: " ${LIBRARY_INSTALL_PATH} )
 
 file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 
+
 add_library(quantityland2 INTERFACE)
-target_compile_features(quantityland2 INTERFACE cxx_std_17)
+target_compile_features(quantityland2 INTERFACE cxx_std_20)
 install(TARGETS quantityland2 LIBRARY DESTINATION lib)
 
 target_include_directories(quantityland2

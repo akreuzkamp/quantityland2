@@ -26,26 +26,25 @@
 namespace Quantityland2 {
 
 namespace natural::detail {
-    template<typename Engine, int mass, int length, int time, int electriccurrent, int temperature, int amountofsubstance, int luminousintensity>
-    constexpr int massDimension(Quantity<Engine, mass, length, time, electriccurrent, temperature, amountofsubstance, luminousintensity>)
+    template<typename Engine, Ratio mass, Ratio length, Ratio time, Ratio electriccurrent, Ratio temperature, Ratio amountofsubstance, Ratio luminousintensity>
+    constexpr Ratio massDimension(Quantity<Engine, mass, length, time, electriccurrent, temperature, amountofsubstance, luminousintensity>)
     {
         return mass - length - time + temperature;
     } //FIXME add mass dimension of electriccurrent, amountofsubstance, luminousintensity
 
-    template<typename Engine, int m, typename SIQuantity>
+    template<typename Engine, Ratio m, typename SIQuantity>
     constexpr bool hasSameDimension(Quantity<Engine, m>, SIQuantity siQuantity)
     {
         return m == massDimension(siQuantity);
     }
 
     template<typename MassQuantity, typename SIQuantity>
-    constexpr bool canConvertToSIDimensions_v = detail::hasSameDimension(declval<MassQuantity>(), declval<SIQuantity>());
+    constexpr bool canConvertToSIDimensions_v = detail::hasSameDimension(MassQuantity::fromNumericalValue(0.0), SIQuantity::fromNumericalValue(0.0));
 
     // TODO: Find out higher precision conversion factors
     template<typename ...T> constexpr double toSI_conversionFactor_v = 1.0;
 
-
-    template<typename Engine, int mass, int length, int time, int electriccurrent, int temperature, int amountofsubstance, int luminousintensity>
+    template<typename Engine, Ratio mass, Ratio length, Ratio time, Ratio electriccurrent, Ratio temperature, Ratio amountofsubstance, Ratio luminousintensity>
     constexpr double toSI_conversionFactor(Quantity<Engine, mass, length, time, electriccurrent, temperature, amountofsubstance, luminousintensity>)
     {
         constexpr double massFactor = 1.782662e-36; // 1eV / kg
@@ -77,8 +76,8 @@ namespace natural::detail {
      * Note: This only gives the conversion factor to SI, not to SI-derived system of units. To do
      *       that, you'll need a second conversion.
      */
-    template<typename Engine, int ...DimensionPack>
-    constexpr double toSI_conversionFactor_v<Quantity<Engine, DimensionPack...>> = toSI_conversionFactor(declval<Quantity<Engine, DimensionPack...>>());
+    template<typename Engine, Ratio ...DimensionPack>
+    constexpr double toSI_conversionFactor_v<Quantity<Engine, DimensionPack...>> = toSI_conversionFactor(Quantity<Engine, DimensionPack...>::fromNumericalValue(0.0));
 
 
 } // namespac detail
@@ -136,9 +135,8 @@ struct NaturalEngine
      * \p TargetQuantity is an explicit template parameter, \p massDimension can be deduced from
      * \p inputValue.
      */
-    template<typename TargetQuantity, int massDimension>
-    static constexpr auto toSiDimensions(Quantity<NaturalEngine, massDimension> inputValue)
-    -> TargetQuantity
+    template<typename TargetQuantity, Ratio massDimension>
+    static constexpr TargetQuantity toSiDimensions(Quantity<NaturalEngine, massDimension> inputValue)
     {
         static_assert(natural::detail::canConvertToSIDimensions_v<Quantity<NaturalEngine, massDimension>, TargetQuantity>,
                       "Can't convert to SI: Mass dimension of source and SI dimension of target do not match.");
@@ -157,12 +155,12 @@ struct NaturalEngine
      * \p SourceEngine can have any system of units which uses SI dimensions and allows conversion
      * to SI units. Conversion factors will be inserted as necessary.
      */
-    template<typename SourceEngine, int ...DimensionPack>
+    template<typename SourceEngine, Ratio ...DimensionPack>
     static constexpr auto fromSiDimensions(Quantity<SourceEngine, DimensionPack...> inputValue)
-    -> Quantity<NaturalEngine, natural::detail::massDimension(declval<Quantity<SourceEngine, DimensionPack...>>())>
+    -> Quantity<NaturalEngine, natural::detail::massDimension(Quantity<SourceEngine, DimensionPack...>::fromNumericalValue(0.0))>
     {
         Quantity<SiEngine, DimensionPack...> tmp = inputValue;
-        using Ret = Quantity<NaturalEngine, natural::detail::massDimension(declval<Quantity<SourceEngine, DimensionPack...>>())>;
+        using Ret = Quantity<NaturalEngine, natural::detail::massDimension(Quantity<SourceEngine, DimensionPack...>::fromNumericalValue(0.0))>;
 
         return Ret::fromNumericalValue(
             tmp.numericalValue() / natural::detail::toSI_conversionFactor_v<Quantity<SourceEngine, DimensionPack...>>
