@@ -86,6 +86,10 @@ static_assert(std::is_same_v<
     decltype(std::declval<Quantity<void, 2, 1, 0>>() * std::declval<Quantity<void, -2, -1, 0>>()),
     double
 >);
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, Ratio { 1, 2 }, Ratio { 3, 7 }, 0>>() * std::declval<Quantity<void, Ratio { 5, 10 }, Ratio { -8, 14 }, Ratio { -2, 5 } >>()),
+    Quantity<void, 1, Ratio { -1, 7 }, Ratio { -2, 5 }>
+>);
 
 // Division
 static_assert(std::is_same_v<
@@ -136,44 +140,48 @@ static_assert(std::is_same_v<
     decltype(std::declval<Quantity<void, 2, 1, 0>>() / std::declval<Quantity<void, 2, 1, 0>>()),
     double
 >);
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, Ratio { 1, 2 }, Ratio { 3, 7 }, 0>>() / std::declval<Quantity<void, Ratio { 1, 2 }, Ratio { 8, 14 }, Ratio { -2, 5 } >>()),
+    Quantity<void, 0, Ratio { -1, 7 }, Ratio { 2, 5 }>
+>);
 
 
 // Multiplication / Division with/by scalars
 
 static_assert(std::is_same_v<
-    decltype(std::declval<Quantity<void, 2, 1, 0>>() * std::declval<double>()),
-    Quantity<void, 2, 1, 0>
+    decltype(std::declval<Quantity<void, 2, Ratio{1, 2}, 0>>() * std::declval<double>()),
+    Quantity<void, 2, Ratio{1, 2}, 0>
 >);
 static_assert(std::is_same_v<
-    decltype(std::declval<double>() * std::declval<Quantity<void, 2, 1, 0>>()),
-    Quantity<void, 2, 1, 0>
->);
-
-static_assert(std::is_same_v<
-    decltype(std::declval<Quantity<void, 2, 1, 0> >() / std::declval<double>()),
-    Quantity<void, 2, 1, 0>
->);
-static_assert(std::is_same_v<
-    decltype(std::declval<double>() / std::declval<Quantity<void, 2, 1, 0> >()),
-    Quantity<void, -2, -1, 0>
+    decltype(std::declval<double>() * std::declval<Quantity<void, 2, Ratio{1, 2}, 0>>()),
+    Quantity<void, 2, Ratio{1, 2}, 0>
 >);
 
 static_assert(std::is_same_v<
-    decltype(std::declval<Quantity<void, 2, 1, 0>>() * std::declval<int>()),
-    Quantity<void, 2, 1, 0>
+    decltype(std::declval<Quantity<void, 2, Ratio{1, 2}, 0> >() / std::declval<double>()),
+    Quantity<void, 2, Ratio{1, 2}, 0>
 >);
 static_assert(std::is_same_v<
-    decltype(std::declval<int>() * std::declval<Quantity<void, 2, 1, 0> >()),
-    Quantity<void, 2, 1, 0>
+    decltype(std::declval<double>() / std::declval<Quantity<void, 2, Ratio{1, 2}, 0> >()),
+    Quantity<void, -2, Ratio {-1, 2}, 0>
 >);
 
 static_assert(std::is_same_v<
-    decltype(std::declval<Quantity<void, 2, 1, 0> >() / std::declval<int>()),
-    Quantity<void, 2, 1, 0>
+    decltype(std::declval<Quantity<void, 2, Ratio{1, 2}, 0>>() * std::declval<int>()),
+    Quantity<void, 2, Ratio{1, 2}, 0>
 >);
 static_assert(std::is_same_v<
-    decltype(std::declval<int>() / std::declval<Quantity<void, 2, 1, 0> >()),
-    Quantity<void, -2, -1, 0>
+    decltype(std::declval<int>() * std::declval<Quantity<void, 2, Ratio{1, 2}, 0> >()),
+    Quantity<void, 2, Ratio{1, 2}, 0>
+>);
+
+static_assert(std::is_same_v<
+    decltype(std::declval<Quantity<void, 2, Ratio{1, 2}, 0> >() / std::declval<int>()),
+    Quantity<void, 2, Ratio{1, 2}, 0>
+>);
+static_assert(std::is_same_v<
+    decltype(std::declval<int>() / std::declval<Quantity<void, 2, Ratio{1, 2}, 0> >()),
+    Quantity<void, -2, Ratio {-1, 2}, 0>
 >);
 
 // Addition and substraction
@@ -284,6 +292,8 @@ constexpr NaturalUnits::Length nu_l5 = NaturalUnits::fromSiDimensions(si_l_auto)
 constexpr NaturalUnits::Time minInNU_auto = NaturalUnits::fromSiDimensions(SI::units::min);
 constexpr NaturalUnits::Time minInNU_man = NaturalUnits::fromSiDimensions(SI::units::min / SI::constants::h_bar * SI::constants::c_0 * SI::constants::c_0);
 
+constexpr auto nonIntegerMassDimension = Quantity<NaturalEngine, Ratio { -13, 15 }>::fromNumericalValue(1.5);
+constexpr Quantity<SiEngine, Ratio {-1, 5}, Ratio {2, 3}, 0, 0, 0, 0, 0> nonIntegerSiQuantity = NaturalUnits::toSiDimensions<Quantity<SiEngine, Ratio {-1, 5}, Ratio {2, 3}, 0, 0, 0, 0, 0>>(nonIntegerMassDimension);
 
 static_assert(fuzzy_equal(NaturalUnits::fromSiDimensions(SI::units::eV).numericalValue(), 1.0));
 static_assert(fuzzy_equal(nu_l.numericalValue(), nu_l2.numericalValue())); // converting to si and back manually gives the original value
@@ -349,6 +359,11 @@ int main() {
     std::cout << (1.0 * NaturalUnits::units::eV * NaturalUnits::units::eV).numericalValue() << std::endl;
 
     relativisticKinematic();
+
+    assert(root<2>(5_J)*root<2>(5_J) == 5_J);
+    Quantity<CGSEngine, 0, Ratio {1, 2}, 0, 0, 0, 0, 0> nonIntegerCGS = root<2>(4*SI::units::m);
+    assert(nonIntegerCGS / root<2>(SI::units::m) == 2.0);
+    assert(nonIntegerCGS.numericalValue() == 2.0);
 
     return 0;
 }
@@ -417,3 +432,10 @@ class MySimulation : private SI::units
         std::cout << x;
     }
 };
+
+
+// Test non-integer exponents
+static_assert(std::is_same_v<decltype(root<2>(1_kg)), Quantity<SiEngine, Ratio{1, 2}, 0, 0, 0, 0, 0, 0>>);
+static_assert(std::is_same_v<decltype(root<2>(1_kg) * root<2>(1_kg)), Quantity<SiEngine, 1, 0, 0, 0, 0, 0, 0>>);
+Quantity<SiEngine, Ratio{1, 2}, 0, 0, 0, 0, 0, 0> sqrtMass = root<2>(1_kg);
+SI::Mass sqrtMassSquared = sqrtMass * sqrtMass;

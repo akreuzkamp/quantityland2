@@ -2,6 +2,10 @@ add_executable(tst_quantityland2 tst_quantityland2.cpp)
 target_link_libraries(tst_quantityland2 PUBLIC quantityland2)
 add_test(NAME tst_quantityland2 COMMAND tst_quantityland2)
 
+add_executable(tst_rungekutta tst_rungekutta.cpp)
+target_link_libraries(tst_rungekutta PUBLIC quantityland2)
+add_test(NAME tst_rungekutta COMMAND tst_rungekutta)
+
 find_package(GSL REQUIRED)
 
 # add_executable(tst_gslintegration tst_gslintegration.cpp)

@@ -30,18 +30,10 @@
 #include <numeric>
 // #include <compare>
 
+
 namespace Quantityland2 {
 
-template<typename T, typename Enable=void> struct numberTypeOf
-{
-    using type = double;
-};
-template<typename T> struct numberTypeOf<T, std::void_t<typename T::NumberType>>
-{
-    using type = typename T::NumberType;
-};
 
-template<typename T> using numberTypeOf_t = typename numberTypeOf<T>::type;
 
 struct Ratio {
     /* implicit */ constexpr Ratio(int num) : num(num), denom(1) {}
@@ -57,11 +49,6 @@ struct Ratio {
     friend constexpr auto operator!=(Ratio lhs, int rhs) { return (lhs.value()) != rhs; }
     friend constexpr auto operator!=(Ratio lhs, Ratio rhs) { return (lhs.value()) != rhs.value(); }
 
-    friend constexpr auto operator<(Ratio lhs, int rhs) { return (lhs.value()) < rhs; }
-    friend constexpr auto operator<(Ratio lhs, Ratio rhs) { return (lhs.value()) < rhs.value(); }
-    friend constexpr auto operator>(Ratio lhs, int rhs) { return (lhs.value()) > rhs; }
-    friend constexpr auto operator>(Ratio lhs, Ratio rhs) { return (lhs.value()) > rhs.value(); }
-
 
     Ratio constexpr friend operator+(Ratio lhs, Ratio rhs) { auto denom = std::lcm(lhs.denom, rhs.denom);  return Ratio { (denom / lhs.denom) * lhs.num + (denom / rhs.denom) * rhs.num, denom }; }
     Ratio constexpr friend operator-(Ratio lhs, Ratio rhs) { auto denom = std::lcm(lhs.denom, rhs.denom);  return Ratio { (denom / lhs.denom) * lhs.num - (denom / rhs.denom) * rhs.num, denom }; }
@@ -73,6 +60,47 @@ struct Ratio {
     const int num;
     const int denom;
 };
+template<typename T>
+concept Rational = std::is_same_v<T, int> || std::is_same_v<T, Ratio>;
+
+constexpr int ratioNum(int i) { return i; }
+constexpr int ratioNum(Ratio r) { return r.num; }
+constexpr double ratioValue(int i) { return double { i }; }
+constexpr double ratioValue(Ratio r) { return double{ r.num } / double { r.denom }; }
+constexpr int ratioDenom(int i) { return 1; }
+constexpr int ratioDenom(Ratio r) { return r.denom; }
+
+constexpr Ratio ratioDivide(int lhs, int rhs) { return Ratio { lhs, rhs }; }
+constexpr Ratio ratioDivide(Ratio lhs, Ratio rhs) { return lhs / rhs; }
+
+template<int num, int denom> constexpr int makeRatio() requires(denom == 1)
+{
+    return num;
+}
+template<int num, int denom> constexpr Ratio makeRatio() requires(denom != 1)
+{
+    return Ratio {num, denom};
+}
+
+template<Rational auto r> constexpr int ratioDecay() requires(ratioDenom(r) == 1)
+{
+    return ratioNum(r);
+}
+template<Rational auto r> constexpr Ratio ratioDecay() requires(ratioDenom(r) != 1)
+{
+    return r;
+}
+
+template<typename T, typename Enable=void> struct numberTypeOf
+{
+    using type = double;
+};
+template<typename T> struct numberTypeOf<T, std::void_t<typename T::NumberType>>
+{
+    using type = typename T::NumberType;
+};
+
+template<typename T> using numberTypeOf_t = typename numberTypeOf<T>::type;
 
 }
 
@@ -87,7 +115,7 @@ namespace std {
 namespace Quantityland2 {
 
 
-template<typename Engine_, Ratio ...DimensionExponents>
+template<typename Engine_, Rational auto ...DimensionExponents>
 class Quantity;
 
 
@@ -97,14 +125,14 @@ namespace detail {
 
     template<typename T>
     auto isQuantity(T &) -> std::false_type;
-    template<typename Engine, Ratio ...DimensionPack>
+    template<typename Engine, Rational auto ...DimensionPack>
     auto isQuantity(Quantity<Engine, DimensionPack...> &) -> std::true_type;
     template<typename T>
     constexpr bool isQuantity_v = decltype(isQuantity(declval<T>()))::value;
 
-    template<typename Engine, Ratio ...exponents>
-    auto decay(Quantity<Engine, exponents...>&) -> std::enable_if_t<((exponents != 0) || ...), Quantity<Engine, exponents...>>;
-    template<typename Engine, Ratio ...exponents>
+    template<typename Engine, Rational auto ...exponents>
+    auto decay(Quantity<Engine, exponents...>&) -> std::enable_if_t<((exponents != 0) || ...), Quantity<Engine, ratioDecay<exponents>()...>>;
+    template<typename Engine, Rational auto ...exponents>
     auto decay(Quantity<Engine, exponents...>&) -> std::enable_if_t<((exponents == 0) && ...), numberTypeOf_t<Engine>>;
 
     template<typename Q>
@@ -112,18 +140,18 @@ namespace detail {
 
 
 
-    template<typename ToEngine, typename FromEngine, Ratio ...DimensionPack>
+    template<typename ToEngine, typename FromEngine, Rational auto ...DimensionPack>
     constexpr auto convert(Quantity<FromEngine, DimensionPack...> v)
         -> std::enable_if_t<std::is_same_v<typename FromEngine::referenceEngine, ToEngine>, numberTypeOf_t<FromEngine>>;
-    template<typename ToEngine, typename FromEngine, Ratio ...DimensionPack>
+    template<typename ToEngine, typename FromEngine, Rational auto ...DimensionPack>
     constexpr auto convert(Quantity<FromEngine, DimensionPack...> v)
         -> std::enable_if_t<std::is_same_v<typename ToEngine::referenceEngine, FromEngine>, numberTypeOf_t<FromEngine>>;
-    template<typename ToEngine, typename FromEngine, Ratio ...DimensionPack>
+    template<typename ToEngine, typename FromEngine, Rational auto ...DimensionPack>
     constexpr auto convert(Quantity<FromEngine, DimensionPack...> v)
         -> std::enable_if_t<std::is_same_v<typename ToEngine::referenceEngine, typename FromEngine::referenceEngine>
                         && !std::is_same_v<typename ToEngine::referenceEngine, void>
                         && !std::is_same_v<FromEngine, ToEngine>, numberTypeOf_t<FromEngine>>;
-    template<typename ToEngine, Ratio ...DimensionPack>
+    template<typename ToEngine, Rational auto ...DimensionPack>
     constexpr numberTypeOf_t<ToEngine> convert(Quantity<ToEngine, DimensionPack...> v);
 
 
@@ -131,7 +159,7 @@ namespace detail {
 
     template<typename T, std::enable_if_t<std::is_arithmetic_v<T>>* = nullptr>
         constexpr T toNumericalValue(const T value);
-    template<typename Engine, Ratio ...DimensionPack>
+    template<typename Engine, Rational auto ...DimensionPack>
         constexpr numberTypeOf_t<Engine> toNumericalValue(const Quantity<Engine, DimensionPack...> &value);
     template<typename T, std::enable_if_t<!isQuantity_v<T>>* = nullptr>
         constexpr T fromNumericalValue(const T value);
@@ -139,7 +167,7 @@ namespace detail {
         constexpr T fromNumericalValue(const typename T::Scalar value);
 }
 
-template<typename Engine_, Ratio ...DimensionExponents>
+template<typename Engine_, Rational auto ...DimensionExponents>
     class Quantity // I want Meta-classes
 {
 public:
@@ -151,11 +179,11 @@ public:
 
 /*
     template<typename OtherEngine> constexpr Quantity &operator= (const Quantity<OtherEngine, DimensionExponents...> &other);
-    template<typename OtherEngine, Ratio ...OtherDimensionExponents> constexpr Quantity &operator+= (const Quantity<OtherEngine, OtherDimensionExponents...> &other);
-    template<typename OtherEngine, Ratio ...OtherDimensionExponents> constexpr Quantity &operator-= (const Quantity<OtherEngine, OtherDimensionExponents...> &other);
+    template<typename OtherEngine, Rational auto ...OtherDimensionExponents> constexpr Quantity &operator+= (const Quantity<OtherEngine, OtherDimensionExponents...> &other);
+    template<typename OtherEngine, Rational auto ...OtherDimensionExponents> constexpr Quantity &operator-= (const Quantity<OtherEngine, OtherDimensionExponents...> &other);
 
-    template<typename OtherEngine, Ratio ...OtherDimensionExponents> constexpr Quantity operator+ (const Quantity<OtherEngine, OtherDimensionExponents...> &other);
-    template<typename OtherEngine, Ratio ...OtherDimensionExponents> constexpr Quantity operator- (const Quantity<OtherEngine, OtherDimensionExponents...> &other);
+    template<typename OtherEngine, Rational auto ...OtherDimensionExponents> constexpr Quantity operator+ (const Quantity<OtherEngine, OtherDimensionExponents...> &other);
+    template<typename OtherEngine, Rational auto ...OtherDimensionExponents> constexpr Quantity operator- (const Quantity<OtherEngine, OtherDimensionExponents...> &other);
 
     template<typename OtherEngine> constexpr bool operator==(const Quantity<OtherEngine, DimensionExponents...> &other) const;
     template<typename OtherEngine> constexpr bool operator!=(const Quantity<OtherEngine, DimensionExponents...> &other) const;
@@ -182,10 +210,10 @@ public:
     }
 
 
-    template<typename OtherEngine, Ratio ...OtherDimensionExponents>
+    template<typename OtherEngine, Rational auto ...OtherDimensionExponents>
     constexpr Quantity< Engine_, DimensionExponents... >& operator+= (const Quantity< OtherEngine, OtherDimensionExponents... >& rhs)
     {
-        static_assert ( ( std::is_same_v<OtherDimensionExponents, DimensionExponents> && ... ), "Can't add quantities of differing dimension." );
+        static_assert ( ( (OtherDimensionExponents == DimensionExponents) && ... ), "Can't add quantities of differing dimension." );
         // We do the combination of broad template and static_assert to get better error messages.
         // Without the error message would be "no matching call to operator+ [...], candidates are: [List of 5 billion free operator+ overloads]"
 
@@ -194,16 +222,16 @@ public:
     }
 
 
-    template<typename OtherEngine, Ratio ...OtherDimensionExponents>
+    template<typename OtherEngine, Rational auto ...OtherDimensionExponents>
     constexpr Quantity< Engine_, DimensionExponents... >& operator-= (const Quantity< OtherEngine, OtherDimensionExponents... >& rhs)
     {
-        static_assert ( ( std::is_same_v<OtherDimensionExponents, DimensionExponents> && ... ), "Can't subtract quantities of differing dimension." );
+        static_assert ( ( (OtherDimensionExponents == DimensionExponents) && ... ), "Can't subtract quantities of differing dimension." );
         m_value -= detail::convert<Engine> ( rhs );
         return *this;
     }
 
 
-    template<typename OtherEngine, Ratio ...OtherDimensionExponents>
+    template<typename OtherEngine, Rational auto ...OtherDimensionExponents>
     constexpr friend Quantity< Engine_, DimensionExponents... > operator+ (const Quantity<Engine_, DimensionExponents...> &lhs, const Quantity<OtherEngine, OtherDimensionExponents...>& rhs)
     {
         static_assert ( ( (OtherDimensionExponents == DimensionExponents) && ... ), "Can't add quantities of differing dimension." );
@@ -211,7 +239,7 @@ public:
     }
 
 
-    template<typename OtherEngine, Ratio ...OtherDimensionExponents>
+    template<typename OtherEngine, Rational auto ...OtherDimensionExponents>
     constexpr friend Quantity< Engine_, DimensionExponents... > operator- (const Quantity<Engine_, DimensionExponents...> &lhs, const Quantity<OtherEngine, OtherDimensionExponents...>& rhs)
     {
         static_assert ( ( (OtherDimensionExponents == DimensionExponents) && ... ), "Can't subtract quantities of differing dimension." );
@@ -261,7 +289,7 @@ public:
     }
 
 
-    template<typename Engine2, Ratio ...DimensionPack2>
+    template<typename Engine2, Rational auto ...DimensionPack2>
     constexpr friend auto operator*(const Quantity<Engine, DimensionExponents...> &lhs, const Quantity<Engine2, DimensionPack2...> &rhs)
         -> detail::decay_t<Quantity<Engine, (DimensionExponents + DimensionPack2)...>>
     {
@@ -269,7 +297,7 @@ public:
         return detail::fromNumericalValue<Ret_t>(lhs.numericalValue() * detail::convert<Engine>(rhs));
     }
 
-    template<typename Engine2, Ratio ...DimensionPack2>
+    template<typename Engine2, Rational auto ...DimensionPack2>
     constexpr friend auto operator/(const Quantity<Engine, DimensionExponents...> &lhs, const Quantity<Engine2, DimensionPack2...> &rhs)
         -> detail::decay_t<Quantity<Engine, (DimensionExponents - DimensionPack2)...>>
     {
@@ -318,11 +346,11 @@ protected:
     Scalar m_value;
 };
 
-template<Ratio exp_, typename T>
+template<Rational auto exp_, typename T>
 constexpr auto pow(T &&base)
-    -> std::enable_if_t<exp_.denom == 1, std::decay_t<T>>
+    -> std::enable_if_t<ratioDenom(exp_) == 1, std::decay_t<T>>
 {
-    constexpr int exp = exp_.num;
+    constexpr int exp = ratioNum(exp_);
     if constexpr (exp < 0) {
         return 1.0 / pow<-exp>(base);
     } else if constexpr (exp == 0) {
@@ -338,12 +366,19 @@ constexpr auto pow(T &&base)
 }
 
 
-template<Ratio exp, typename Engine, Ratio ...exponentPack>
+template<Ratio exp, typename T>
+constexpr auto pow(T &&base)
+    -> std::enable_if_t<ratioDenom(exp) != 1, std::decay_t<T>>
+{
+    return std::pow(base, ratioValue(exp));  //FIXME
+}
+
+template<Ratio exp, typename Engine, Rational auto ...exponentPack>
 auto pow(const Quantity<Engine, exponentPack...> &base)
-    -> std::enable_if_t<exp.denom != 1, detail::decay_t<Quantity<Engine, (exponentPack * exp)...>>>
+    -> std::enable_if_t<ratioDenom(exp) != 1, detail::decay_t<Quantity<Engine, (exponentPack * exp)...>>>
 {
     using Ret_t = detail::decay_t<Quantity<Engine, (exponentPack * exp)...>>;
-    return detail::fromNumericalValue<Ret_t>(std::pow(base.numericalValue(), exp));
+    return detail::fromNumericalValue<Ret_t>(std::pow(base.numericalValue(), ratioValue(exp)));
 }
 
 namespace detail { //FIXME: why can't I just put this in a non-inline namespace?
@@ -353,7 +388,7 @@ namespace detail { //FIXME: why can't I just put this in a non-inline namespace?
     template<typename Quantity>
     constexpr Quantity &declval() noexcept { auto q = Quantity::fromNumericalValue(0.0); return q; }
 
-    template<typename Engine1, typename Engine2, Ratio ...DimensionPack1, Ratio ...DimensionPack2>
+    template<typename Engine1, typename Engine2, Rational auto ...DimensionPack1, Rational auto ...DimensionPack2>
     constexpr bool hasSameDimension(Quantity<Engine1, DimensionPack1...>, Quantity<Engine2, DimensionPack2...>)
     {
         return ((DimensionPack1 == DimensionPack2) && ...);
@@ -362,7 +397,7 @@ namespace detail { //FIXME: why can't I just put this in a non-inline namespace?
     template<typename Quantity1, typename Quantity2>
     constexpr bool hasSameDimension_v = hasSameDimension(std::declval<Quantity1>(), std::declval<Quantity2>());
 
-    template<typename NewEngine, typename OldEngine, Ratio ...DimensionPack>
+    template<typename NewEngine, typename OldEngine, Rational auto ...DimensionPack>
     auto changeEngine(Quantity<OldEngine, DimensionPack...>) -> Quantity<NewEngine, DimensionPack...>;
 
     template<typename NewEngine, typename Quantity>
@@ -371,16 +406,16 @@ namespace detail { //FIXME: why can't I just put this in a non-inline namespace?
 
     template<typename T, std::enable_if_t<std::is_arithmetic_v<T>>* = nullptr>
         constexpr T toNumericalValue(const T value) { return value; }
-    template<typename Engine, Ratio ...DimensionPack>
+    template<typename Engine, Rational auto ...DimensionPack>
         constexpr numberTypeOf_t<Engine> toNumericalValue(const Quantity<Engine, DimensionPack...> &value) { return value.numericalValue(); }
     template<typename T, std::enable_if_t<!isQuantity_v<T>>* = nullptr>//, std::enable_if_t<std::is_arithmetic_v<T>>* = nullptr>
         constexpr T fromNumericalValue(const T value) { return value; }
     template<typename T, std::enable_if_t<isQuantity_v<T>>* = nullptr>
         constexpr T fromNumericalValue(const typename T::Scalar value) { return T::fromNumericalValue(value); }
 /*
-    template<typename Engine, Ratio ...exponents>
+    template<typename Engine, Rational auto ...exponents>
     auto decay(Quantity<Engine, exponents...>) -> std::enable_if_t<((exponents != 0) || ...), Quantity<Engine, exponents...>>;
-    template<typename Engine, Ratio ...exponents>
+    template<typename Engine, Rational auto ...exponents>
     auto decay(Quantity<Engine, exponents...>) -> std::enable_if_t<((exponents == 0) && ...), numberTypeOf_t<Engine>>;
 
     template<typename Q>
@@ -397,19 +432,19 @@ namespace detail { //FIXME: why can't I just put this in a non-inline namespace?
     * Example: The cgs system has the SI system as its reference. The base unit of cgs is centimeter,
     * the base unit of SI is meter. Thus `referenceConversionFactor(cgs::Length{}) == 1cm/1m == 0.01`.
     */
-    template<typename Engine, Ratio ...exponentPack, size_t ...I>
+    template<typename Engine, Rational auto ...exponentPack, size_t ...I>
     constexpr auto referenceConversionFactor_impl(const Quantity<Engine, exponentPack...> &, std::index_sequence<I...> = std::make_index_sequence<sizeof...(exponentPack)>())
-        -> std::enable_if_t<((exponentPack.denom == 1) && ...), double>
+//         -> std::enable_if_t<((ratioDenom(exponentPack) == 1) && ...), double>
     {
-        return (pow<exponentPack.num>(toNumericalValue(std::get<I>(Engine::baseUnits))) * ...);
+        return (pow<ratioNum(exponentPack)>(toNumericalValue(std::get<I>(Engine::baseUnits))) * ...);
     }
-    template<typename Engine, Ratio ...exponentPack, size_t ...I>
-    auto referenceConversionFactor_impl(const Quantity<Engine, exponentPack...> &, std::index_sequence<I...> = std::make_index_sequence<sizeof...(exponentPack)>())
-        -> std::enable_if_t<((exponentPack.denom != 1) || ...), double>
-    {
-        return (std::pow(toNumericalValue(std::get<I>(Engine::baseUnits)), exponentPack.value()) * ...);
-    }
-    template<typename Engine, Ratio ...exponentPack>
+//     template<typename Engine, Rational auto ...exponentPack, size_t ...I>
+//     auto referenceConversionFactor_impl(const Quantity<Engine, exponentPack...> &, std::index_sequence<I...> = std::make_index_sequence<sizeof...(exponentPack)>())
+//         -> std::enable_if_t<((ratioDenom(exponentPack) != 1) || ...), double>
+//     {
+//         return (std::pow(toNumericalValue(std::get<I>(Engine::baseUnits)), ratioValue(exponentPack)) * ...);
+//     }
+    template<typename Engine, Rational auto ...exponentPack>
     constexpr double referenceConversionFactor(const Quantity<Engine, exponentPack...> &q)
     {
         return referenceConversionFactor_impl(q, std::make_index_sequence<sizeof...(exponentPack)>());
@@ -422,13 +457,13 @@ namespace detail { //FIXME: why can't I just put this in a non-inline namespace?
     template<typename Engine>
     constexpr bool definesUnitStrings_v = decltype(definesUnitStrings(std::declval<Engine>()))::value;
 
-    template<typename Engine, Ratio ...exponentPack, size_t ...I>
+    template<typename Engine, Rational auto ...exponentPack, size_t ...I>
     std::string formatUnit_impl(Quantity<Engine, exponentPack...>, std::index_sequence<I...>)
     {
-        auto str = ((std::string(std::get<I>(Engine::unitStrings)) + "^" + std::to_string(exponentPack) + "*") + ...);
+        auto str = ((exponentPack == 0 ? std::string() : std::string(std::get<I>(Engine::unitStrings)) + "^" + std::to_string(exponentPack) + "*") + ...);
         return str.substr(0, str.size() - 1); // removes the trailing "*"
     }
-    template<typename Engine, Ratio ...exponentPack, size_t ...I>
+    template<typename Engine, Rational auto ...exponentPack, size_t ...I>
     std::string formatUnit(Quantity<Engine, exponentPack...> q)
     {
         return formatUnit_impl(q, std::make_index_sequence<sizeof...(exponentPack)>());
@@ -436,20 +471,20 @@ namespace detail { //FIXME: why can't I just put this in a non-inline namespace?
 
 
 
-    template<typename ToEngine, typename FromEngine, Ratio ...DimensionPack>
+    template<typename ToEngine, typename FromEngine, Rational auto ...DimensionPack>
     constexpr auto convert(Quantity<FromEngine, DimensionPack...> v)
         -> std::enable_if_t<std::is_same_v<typename FromEngine::referenceEngine, ToEngine>, numberTypeOf_t<FromEngine>>
     {
         return v.numericalValue() * detail::referenceConversionFactor(v);
     }
-    template<typename ToEngine, typename FromEngine, Ratio ...DimensionPack>
+    template<typename ToEngine, typename FromEngine, Rational auto ...DimensionPack>
     constexpr auto convert(Quantity<FromEngine, DimensionPack...> v)
         -> std::enable_if_t<std::is_same_v<typename ToEngine::referenceEngine, FromEngine>, numberTypeOf_t<FromEngine>>
     {
         constexpr auto ownConvFactor = detail::referenceConversionFactor(Quantity<ToEngine, DimensionPack...>::fromNumericalValue(0.0)); // the numericalValue of zero is arbitrary and won't be used
         return 1.0 / ownConvFactor * v.numericalValue();
     }
-    template<typename ToEngine, typename FromEngine, Ratio ...DimensionPack>
+    template<typename ToEngine, typename FromEngine, Rational auto ...DimensionPack>
     constexpr auto convert(Quantity<FromEngine, DimensionPack...> v)
         -> std::enable_if_t<std::is_same_v<typename ToEngine::referenceEngine, typename FromEngine::referenceEngine>
                         && !std::is_same_v<typename ToEngine::referenceEngine, void>
@@ -459,7 +494,7 @@ namespace detail { //FIXME: why can't I just put this in a non-inline namespace?
         constexpr auto rhsConvFactor = detail::referenceConversionFactor(Quantity<ToEngine, DimensionPack...>::fromNumericalValue(0.0)); // the numericalValue of zero is arbitrary and won't be used
         return ownConvFactor / rhsConvFactor * v.numericalValue();
     }
-    template<typename ToEngine, Ratio ...DimensionPack>
+    template<typename ToEngine, Rational auto ...DimensionPack>
     constexpr numberTypeOf_t<ToEngine> convert(Quantity<ToEngine, DimensionPack...> v)
     {
         return v.numericalValue();
@@ -471,11 +506,11 @@ namespace detail { //FIXME: why can't I just put this in a non-inline namespace?
 // static_assert(std::is_same_v<mergeMul_t<Quantity<void, 0, 1, 0>, Quantity<void, 0, 1, 0>>, Quantity<void, 0, 2, 0>>);
 
 
-template<Ratio exp, typename Engine, Ratio ...exponentPack>
+template<Rational auto exp, typename Engine, Rational auto ...exponentPack>
 auto root(const Quantity<Engine, exponentPack...> &base)
 {
 //     static_assert(((exponentPack % exp == 0) && ...), "Extracting the root is not possible: Quantityland2 doesn't support rational exponents yet.");
-    using Ret_t = detail::decay_t<Quantity<Engine, (exponentPack / exp)...>>;
+    using Ret_t = detail::decay_t<Quantity<Engine, ratioDivide(exponentPack, exp)...>>;
     if constexpr (exp == 2) {
         return detail::fromNumericalValue<Ret_t>(std::sqrt(base.numericalValue()));
     } else if constexpr (exp == 3) {
@@ -485,7 +520,7 @@ auto root(const Quantity<Engine, exponentPack...> &base)
     }
 }
 
-template<typename Engine, Ratio ...exponentPack>
+template<typename Engine, Rational auto ...exponentPack>
 std::ostream& operator<<(std::ostream& os, const Quantity<Engine, exponentPack...>& v)
 {
     if constexpr ((detail::definesUnitStrings_v<Engine>)) {
