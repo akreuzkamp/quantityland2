@@ -39,12 +39,12 @@ struct Ratio {
     /* implicit */ constexpr Ratio(int num) : num(num), denom(1) {}
     constexpr Ratio(int num, int denom) : num(num / std::gcd(num, denom)), denom(denom / std::gcd(num, denom)) {}
 
-    constexpr double value() const { return double { num } / denom; }
+    constexpr double value() const { return static_cast<double>(num) / denom; }
 
 //     friend constexpr auto operator<=>(Ratio lhs, int rhs) { return (lhs.value()) <=> rhs; }
 //     friend constexpr auto operator<=>(Ratio lhs, Ratio rhs) { return (lhs.value()) <=> rhs.value(); }
 
-    friend constexpr auto operator==(Ratio lhs, int rhs) { return (lhs.value()) == rhs; }
+    friend constexpr auto operator==(Ratio lhs, int rhs) { return (lhs.value()) == rhs; } // FIXME don't rely on int->double conversion
     friend constexpr auto operator==(Ratio lhs, Ratio rhs) { return (lhs.value()) == rhs.value(); }
     friend constexpr auto operator!=(Ratio lhs, int rhs) { return (lhs.value()) != rhs; }
     friend constexpr auto operator!=(Ratio lhs, Ratio rhs) { return (lhs.value()) != rhs.value(); }
@@ -65,8 +65,8 @@ concept Rational = std::is_same_v<T, int> || std::is_same_v<T, Ratio>;
 
 constexpr int ratioNum(int i) { return i; }
 constexpr int ratioNum(Ratio r) { return r.num; }
-constexpr double ratioValue(int i) { return double { i }; }
-constexpr double ratioValue(Ratio r) { return double{ r.num } / double { r.denom }; }
+constexpr double ratioValue(int i) { return static_cast<double>(i); }
+constexpr double ratioValue(Ratio r) { return r.value(); }
 constexpr int ratioDenom(int i) { return 1; }
 constexpr int ratioDenom(Ratio r) { return r.denom; }
 

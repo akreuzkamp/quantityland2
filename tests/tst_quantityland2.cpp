@@ -36,6 +36,9 @@ using namespace Quantityland2::SI_literals;
 // Multiplication
 // static_assert(std::is_same_v<Quantity<void, 1, 0, 0> );
 
+// Basic properties of Quantity
+static_assert(std::movable<Quantity<void, 0, 1, 0>>);
+static_assert(std::movable<Quantityland2::Quantity<Quantityland2::SiEngine, 0, 0, 0, 0, 1, 0, 0>>);
 
 // Multiplication
 static_assert(std::is_same_v<
