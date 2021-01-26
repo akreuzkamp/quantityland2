@@ -14,9 +14,9 @@ the box.
 * Support for natural units
 * Fully customizable: Create your own system of units or even your own base dimensions
 * Supports arbitrary arithmetic types as basis for quantity types (e.g. complex numbers)
+* fractional exponents
 
 Missing so far:
-* fractional exponents
 * non proportionate units (e.g. °C or dB)
 
 ## Installation
